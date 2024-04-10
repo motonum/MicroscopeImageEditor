@@ -82,6 +82,7 @@ const Picture: React.FC<Props> = ({
     [dpm, microScaleLength]
   );
 
+  // 文字も含めたスケールバーの幅
   const scalebarGroupWidth = useMemo(() => {
     return Math.max(
       calcTextWidth(`${microScaleLength}um`, fontSize) || 0,
@@ -89,18 +90,22 @@ const Picture: React.FC<Props> = ({
     );
   }, [calcTextWidth, microScaleLength, fontSize, getDisplayScalebarLength]);
 
+  // 文字も含めたスケールバーの高さ
   const scalebarGroupHeight = useMemo(() => {
     return fontSize + lineWidth;
   }, [fontSize, lineWidth]);
 
+  // スケールバーのテキストの横幅
   const scaleTextWidth = useMemo(() => {
     return calcTextWidth(`${microScaleLength}um`, fontSize) || 0;
   }, [calcTextWidth, microScaleLength, fontSize]);
 
+  // スケールバーの横幅
   const drawnScalebarLength = useMemo(() => {
     return getDisplayScalebarLength();
   }, [getDisplayScalebarLength]);
 
+  // 画像の縦横の寸法を取得
   useEffect(() => {
     if (!image) return;
     setImageHeight(image.naturalHeight);
@@ -122,6 +127,7 @@ const Picture: React.FC<Props> = ({
     };
   }, [scalebarGroupRef, image]);
 
+  // ドラッグ操作中のハンドリング
   const handleDragMove = useCallback(() => {
     scalebarGroupRef.current?.x(
       Math.min(
@@ -146,6 +152,7 @@ const Picture: React.FC<Props> = ({
     scalebarPos,
   ]);
 
+  // ドラッグ操作後のハンドリング
   const handleDragEnd = useCallback(() => {
     const x = scalebarGroupRef.current?.x();
     const y = scalebarGroupRef.current?.y();

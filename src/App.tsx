@@ -42,6 +42,7 @@ const App = () => {
     onWorkbenchIndexState
   );
 
+  // スケールバーの設定を更新する関数
   const updateScalebarConfig = (
     key: keyof Scalebar,
     value: Scalebar[keyof Scalebar]
