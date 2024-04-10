@@ -170,7 +170,7 @@ const Picture: React.FC<Props> = ({
       <ContextMenuTrigger disabled={!downloadable}>
         <div
           ref={canvasContainerRef}
-          className={`m-6 p-0 ${className}`}
+          className={className}
           style={{
             aspectRatio: `${`${imageWidth} / ${imageHeight}`}`,
           }}

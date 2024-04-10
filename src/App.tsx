@@ -50,26 +50,24 @@ const App = () => {
   };
 
   return (
-    <>
-      <div className="flex min-h-screen">
-        <SettingPanel />
-        <div className="grow min-w-0">
-          <Input
-            type="file"
-            accept="image/jpeg, image/png"
-            onChange={handleInputFile}
-            className="max-w-2xl m-6"
-          />
-          <Picture
-            image={image}
-            objLens={objLens}
-            className="max-w-2xl"
-            downloadable
-            draggable
-          />
-        </div>
+    <div className="flex min-h-screen">
+      <div className="grow min-w-0">
+        <Input
+          type="file"
+          accept="image/jpeg, image/png"
+          onChange={handleInputFile}
+          className="max-w-2xl my-auto"
+        />
+        <Picture
+          image={image}
+          objLens={objLens}
+          className="max-w-2xl mx-auto my-6 p-0"
+          downloadable
+          draggable
+        />
       </div>
-    </>
+      <SettingPanel />
+    </div>
   );
 };
 
