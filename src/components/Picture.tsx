@@ -8,13 +8,17 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { scalebarAtom, scalebarUpdaterAtom } from "@/state/imageState";
+import {
+  magnificationConfigAtom,
+  scalebarAtom,
+  scalebarUpdaterAtom,
+} from "@/state/imageState";
 import { useAtom } from "jotai";
+import { ObjlensOption } from "@/type/options";
 
 type Props = {
   image?: HTMLImageElement;
-  microScaleLength: number;
-  dpm: number;
+  objLens?: ObjlensOption;
   className?: string;
   downloadable?: boolean;
   draggable?: boolean;
@@ -22,11 +26,10 @@ type Props = {
 
 const Picture: React.FC<Props> = ({
   image,
-  microScaleLength,
-  dpm,
   className = "",
   downloadable = false,
   draggable = false,
+  objLens = "x200",
 }) => {
   const [measurements, canvasContainerRef] = useMeasure<HTMLDivElement>();
   const imageRef = useRef<Konva.Image>(null);
@@ -39,6 +42,8 @@ const Picture: React.FC<Props> = ({
     { fontSize, lineWidth, fontWeight, color, scalebarPosX, scalebarPosY },
   ] = useAtom(scalebarAtom);
   const [, updateScalebarConfig] = useAtom(scalebarUpdaterAtom);
+
+  const [magConf] = useAtom(magnificationConfigAtom);
 
   // 拡大倍率
   const scale = useMemo(() => {
@@ -71,17 +76,22 @@ const Picture: React.FC<Props> = ({
 
   // 画像上のスケールバーの長さの計算関数
   const getDisplayScalebarLength = useCallback(
-    () => microScaleLength * dpm * 1e-6, // um単位であるため
-    [dpm, microScaleLength]
+    () => magConf[objLens].length * magConf[objLens].dpm * 1e-6, // um単位であるため
+    [magConf[objLens].dpm, magConf[objLens].length]
   );
 
   // 文字も含めたスケールバーの幅
   const scalebarGroupWidth = useMemo(() => {
     return Math.max(
-      calcTextWidth(`${microScaleLength}um`, fontSize) || 0,
+      calcTextWidth(`${magConf[objLens].length}um`, fontSize) || 0,
       getDisplayScalebarLength()
     );
-  }, [calcTextWidth, microScaleLength, fontSize, getDisplayScalebarLength]);
+  }, [
+    calcTextWidth,
+    magConf[objLens].length,
+    fontSize,
+    getDisplayScalebarLength,
+  ]);
 
   // 文字も含めたスケールバーの高さ
   const scalebarGroupHeight = useMemo(() => {
@@ -90,8 +100,8 @@ const Picture: React.FC<Props> = ({
 
   // スケールバーのテキストの横幅
   const scaleTextWidth = useMemo(() => {
-    return calcTextWidth(`${microScaleLength}um`, fontSize) || 0;
-  }, [calcTextWidth, microScaleLength, fontSize]);
+    return calcTextWidth(`${magConf[objLens].length}um`, fontSize) || 0;
+  }, [calcTextWidth, magConf[objLens].length, fontSize]);
 
   // スケールバーの横幅
   const drawnScalebarLength = useMemo(() => {
@@ -195,7 +205,7 @@ const Picture: React.FC<Props> = ({
                   onDragEnd={handleDragEnd}
                 >
                   <Text
-                    text={`${microScaleLength}um`}
+                    text={`${magConf[objLens].length}um`}
                     fontSize={fontSize}
                     x={(scalebarGroupWidth - scaleTextWidth) / 2}
                     y={0}
