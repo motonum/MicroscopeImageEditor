@@ -5,12 +5,19 @@ import {
 import { LoadedImage, Magnification, Scalebar } from "@/type/imageState";
 import { atom } from "jotai";
 
-export const imageState = atom<LoadedImage[]>([]);
+export const imageAtom = atom<LoadedImage[]>([]);
 
-export const onWorkbenchIndexState = atom<number>(0);
+export const onWorkbenchIndexAtom = atom<number>(0);
 
-export const scalebarState = atom<Scalebar>({ ...DEFAULT_SCALEBAR_STATE });
+export const scalebarAtom = atom<Scalebar>({ ...DEFAULT_SCALEBAR_STATE });
 
-export const magnificationConfigState = atom<Magnification>({
+export const scalebarUpdaterAtom = atom(
+  null,
+  (_, set, newConfigItems: Partial<Scalebar>) => {
+    set(scalebarAtom, (prev) => ({ ...prev, ...newConfigItems }));
+  }
+);
+
+export const magnificationConfigAtom = atom<Magnification>({
   ...DEFAULT_MAGNIFICATION_CONFIG,
 });

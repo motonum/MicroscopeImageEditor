@@ -12,10 +12,9 @@ export type Scalebar = {
   lineWidth: number;
   scalebarPosX: number;
   scalebarPosY: number;
-  // microScaleLength?: number;
   fontWeight: FontWeightOption;
 };
 
 export type Magnification = {
-  [key in ObjlensOption]: { DPM: number; LENGTH: number };
+  [key in ObjlensOption]: { dpm: number; length: number };
 };

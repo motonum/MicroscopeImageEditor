@@ -1,4 +1,3 @@
-import { FontWeightOption, ScalebarColor } from "@/type/options";
 import { useMeasure } from "@react-hookz/web";
 import Konva from "konva";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -9,16 +8,14 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { scalebarAtom, scalebarUpdaterAtom } from "@/state/imageState";
+import { useAtom } from "jotai";
 
 type Props = {
   image?: HTMLImageElement;
   microScaleLength: number;
-  fontSize: number;
-  scalebarColor: ScalebarColor;
   dpm: number;
-  lineWidth?: number;
   className?: string;
-  fontWeight?: FontWeightOption;
   downloadable?: boolean;
   draggable?: boolean;
 };
@@ -26,12 +23,8 @@ type Props = {
 const Picture: React.FC<Props> = ({
   image,
   microScaleLength,
-  fontSize,
-  scalebarColor,
   dpm,
-  lineWidth = 10,
   className = "",
-  fontWeight = "normal",
   downloadable = false,
   draggable = false,
 }) => {
@@ -42,10 +35,10 @@ const Picture: React.FC<Props> = ({
   const scaleTextRef = useRef<Konva.Text>(null);
   const [imageWidth, setImageWidth] = useState<number>(1920);
   const [imageHeight, setImageHeight] = useState<number>(1200);
-  const [scalebarPos, setScalebarPos] = useState<{ x: number; y: number }>({
-    x: 150,
-    y: 100,
-  });
+  const [
+    { fontSize, lineWidth, fontWeight, color, scalebarPosX, scalebarPosY },
+  ] = useAtom(scalebarAtom);
+  const [, updateScalebarConfig] = useAtom(scalebarUpdaterAtom);
 
   // 拡大倍率
   const scale = useMemo(() => {
@@ -149,7 +142,6 @@ const Picture: React.FC<Props> = ({
     fontSize,
     lineWidth,
     scalebarGroupWidth,
-    scalebarPos,
   ]);
 
   // ドラッグ操作後のハンドリング
@@ -157,9 +149,9 @@ const Picture: React.FC<Props> = ({
     const x = scalebarGroupRef.current?.x();
     const y = scalebarGroupRef.current?.y();
     if (x !== undefined && y !== undefined)
-      setScalebarPos({
-        x: imageWidth - (x + scalebarGroupWidth),
-        y: imageHeight - (y + scalebarGroupHeight),
+      updateScalebarConfig({
+        scalebarPosX: imageWidth - (x + scalebarGroupWidth),
+        scalebarPosY: imageHeight - (y + scalebarGroupHeight),
       });
   }, [image, scalebarGroupRef, fontSize, lineWidth, scalebarGroupWidth]);
 
@@ -193,8 +185,8 @@ const Picture: React.FC<Props> = ({
             {image && (
               <Layer>
                 <Group
-                  x={imageWidth - (scalebarPos.x + scalebarGroupWidth)}
-                  y={imageHeight - (scalebarPos.y + scalebarGroupHeight)}
+                  x={imageWidth - (scalebarPosX + scalebarGroupWidth)}
+                  y={imageHeight - (scalebarPosY + scalebarGroupHeight)}
                   draggable={draggable}
                   ref={scalebarGroupRef}
                   height={fontSize + lineWidth}
@@ -207,7 +199,13 @@ const Picture: React.FC<Props> = ({
                     fontSize={fontSize}
                     x={(scalebarGroupWidth - scaleTextWidth) / 2}
                     y={0}
-                    fill={scalebarColor === "black" ? "#000000" : "#ffffff"}
+                    fill={
+                      color === "black"
+                        ? "#000000"
+                        : color === "white"
+                        ? "#ffffff"
+                        : "#ffffff"
+                    }
                     wrap="none"
                     ref={scaleTextRef}
                     fontStyle={fontWeight}
@@ -216,7 +214,13 @@ const Picture: React.FC<Props> = ({
                     x={(scalebarGroupWidth - drawnScalebarLength) / 2}
                     y={fontSize + lineWidth / 2}
                     points={[0, 0, drawnScalebarLength, 0]}
-                    stroke={scalebarColor === "black" ? "#000000" : "#ffffff"}
+                    stroke={
+                      color === "black"
+                        ? "#000000"
+                        : color === "white"
+                        ? "#ffffff"
+                        : "#ffffff"
+                    }
                     strokeWidth={lineWidth}
                   />
                 </Group>

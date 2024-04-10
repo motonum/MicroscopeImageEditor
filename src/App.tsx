@@ -1,5 +1,5 @@
 import "@/App.css";
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   Select,
   SelectContent,
@@ -21,34 +21,27 @@ import { Input } from "@/components/ui/input";
 import { DEFAULT_MAGNIFICATION_CONFIG } from "@/constant/config";
 import { useAtom } from "jotai";
 import {
-  imageState,
-  onWorkbenchIndexState,
-  scalebarState,
+  imageAtom,
+  magnificationConfigAtom,
+  onWorkbenchIndexAtom,
+  scalebarAtom,
+  scalebarUpdaterAtom,
 } from "@/state/imageState";
-import { Scalebar } from "@/type/imageState";
-import { updateObjState } from "@/util/updateObjState";
 import { expectMagnification } from "@/util/expectMagnification";
 
 const App = () => {
-  // const [image, setImage] = useState<HTMLImageElement | undefined>(undefined);
-  const [microScaleLength, setMicroScaleLength] = useState<number>();
+  const [{ fontSize, lineWidth, fontWeight, color }] = useAtom(scalebarAtom);
+  const [loadedImages, setLoadedImages] = useAtom(imageAtom);
+  const [magConf, setMagConf] = useAtom(magnificationConfigAtom);
+  const [, updateScalebarConfig] = useAtom(scalebarUpdaterAtom);
+  const [onWorkbenchIndex] = useAtom(onWorkbenchIndexAtom);
 
-  const [{ fontSize, lineWidth, fontWeight, color }, setScalebarConfig] =
-    useAtom(scalebarState);
-
-  const [images, setLoadedImage] = useAtom(imageState);
-
-  const [onWorkbenchIndex, setOnWorkBenchIndex] = useAtom(
-    onWorkbenchIndexState
-  );
-
-  // スケールバーの設定を更新する関数
-  const updateScalebarConfig = (
-    key: keyof Scalebar,
-    value: Scalebar[keyof Scalebar]
-  ) => {
-    setScalebarConfig(updateObjState(key, value));
-  };
+  const { image, objLens = "x200" } = useMemo(() => {
+    const imageState = loadedImages?.[onWorkbenchIndex];
+    if (!imageState)
+      return { image: undefined, name: undefined, objLens: undefined };
+    return imageState;
+  }, [loadedImages, onWorkbenchIndex]);
 
   // 画像を読み込んだときのハンドラ
   const handleInputFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +60,7 @@ const App = () => {
         if (typeof result === "string") {
           const image = new window.Image();
           image.src = result;
-          setLoadedImage([
+          setLoadedImages([
             {
               image: image,
               name: file.name,
@@ -81,35 +74,25 @@ const App = () => {
   };
 
   // 対物レンズの倍率の型であることのテスト
-  const isObjlensOption = useCallback(
+  const isObjLensOption = useCallback(
     (str: string): str is ObjlensOption => {
       return OBJLENS_OPTIONS.some((item) => item === str);
     },
     [OBJLENS_OPTIONS]
   );
 
-  // スケールバーが表す長さ
-  const getScaleLength = () => {
-    const objlens = images?.[0]?.objLens;
-    if (!objlens || !isObjlensOption(objlens)) {
-      return 0;
-    }
-    return DEFAULT_MAGNIFICATION_CONFIG[objlens].LENGTH;
-  };
-
   // 現在選択されている倍率におけるdots per meterを返す
   const getDPM = () => {
-    const objlens = images?.[0]?.objLens;
-    if (!objlens || !isObjlensOption(objlens)) {
-      return DEFAULT_MAGNIFICATION_CONFIG["x200"].LENGTH;
+    if (!objLens || !isObjLensOption(objLens)) {
+      return DEFAULT_MAGNIFICATION_CONFIG["x200"].length;
     }
-    return DEFAULT_MAGNIFICATION_CONFIG[objlens].DPM;
+    return DEFAULT_MAGNIFICATION_CONFIG[objLens].dpm;
   };
 
   // 倍率の切り替え
-  const handleObjlensChange = (v: string) => {
-    isObjlensOption(v) &&
-      setLoadedImage((prev) =>
+  const handleObjLensChange = (v: string) => {
+    isObjLensOption(v) &&
+      setLoadedImages((prev) =>
         prev.toSpliced(onWorkbenchIndex, 1, {
           ...prev[onWorkbenchIndex],
           objLens: v,
@@ -127,7 +110,7 @@ const App = () => {
 
   // スケールバーの色の切り替え
   const handleScalebarColorChange = (v: string) => {
-    isScalebarColor(v) && updateScalebarConfig("color", "black");
+    isScalebarColor(v) && updateScalebarConfig({ color: "black" });
   };
 
   // 文字の太さの型であるかのテスト
@@ -140,7 +123,7 @@ const App = () => {
 
   // 文字の太さの切り替え
   const handleFontWeightChange = (v: string) => {
-    isFontWeight(v) && updateScalebarConfig("fontWeight", v);
+    isFontWeight(v) && updateScalebarConfig({ fontWeight: v });
   };
 
   return (
@@ -149,9 +132,9 @@ const App = () => {
         <div className="min-w-72 p-6">
           <span>倍率</span>
           <Select
-            value={images?.[onWorkbenchIndex]?.objLens ?? "x200"}
-            onValueChange={handleObjlensChange}
-            disabled={!images.length}
+            value={objLens ?? "x200"}
+            onValueChange={handleObjLensChange}
+            disabled={!loadedImages.length}
           >
             <SelectTrigger>
               <SelectValue placeholder="スケールバーの色" />
@@ -186,15 +169,25 @@ const App = () => {
           <span>スケールバーの長さ</span>
           <Input
             type="number"
-            onChange={(e) => setMicroScaleLength(Number(e.target.value) || 0)}
-            value={microScaleLength ?? getScaleLength()}
+            onChange={(e) =>
+              setMagConf((prev) => {
+                return {
+                  ...prev,
+                  [objLens]: {
+                    ...prev[objLens],
+                    length: Number(e.target.value) || 0,
+                  },
+                };
+              })
+            }
+            value={magConf[objLens].length}
           />
           <Separator className="my-4" />
           <span>スケールバーの太さ</span>
           <Input
             type="number"
             onChange={(e) =>
-              updateScalebarConfig("lineWidth", Number(e.target.value) || 0)
+              updateScalebarConfig({ lineWidth: Number(e.target.value) || 0 })
             }
             value={lineWidth}
           />
@@ -203,7 +196,7 @@ const App = () => {
           <Input
             type="number"
             onChange={(e) =>
-              updateScalebarConfig("fontSize", Number(e.target.value) || 0)
+              updateScalebarConfig({ fontSize: Number(e.target.value) || 0 })
             }
             value={fontSize}
           />
@@ -232,14 +225,10 @@ const App = () => {
             className="max-w-2xl m-6"
           />
           <Picture
-            image={images?.[onWorkbenchIndex]?.image}
-            microScaleLength={microScaleLength || getScaleLength()}
-            fontSize={fontSize}
-            scalebarColor={color}
+            image={image}
+            microScaleLength={magConf[objLens].length}
             dpm={getDPM()}
-            lineWidth={lineWidth}
             className="max-w-2xl"
-            fontWeight={fontWeight}
             downloadable
             draggable
           />
