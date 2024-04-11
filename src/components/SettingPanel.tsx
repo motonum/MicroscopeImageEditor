@@ -25,6 +25,7 @@ import {
   onWorkbenchIndexAtom,
 } from "@/state/imageState";
 import { useCallback, useMemo } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const SettingPanel = () => {
   const [{ fontSize, lineWidth, fontWeight, color }] = useAtom(scalebarAtom);
@@ -85,93 +86,95 @@ const SettingPanel = () => {
   };
 
   return (
-    <div className="min-w-72 p-6">
-      <span>倍率</span>
-      <Select
-        value={objLens ?? "x200"}
-        onValueChange={handleObjLensChange}
-        disabled={!loadedImages.length}
-      >
-        <SelectTrigger>
-          <SelectValue placeholder="スケールバーの色" />
-        </SelectTrigger>
-        <SelectContent>
-          {Object.keys(DEFAULT_MAGNIFICATION_CONFIG).map((item) => {
-            return (
-              <SelectItem value={`${item}`} key={item}>
-                {item}
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
-      <Separator className="my-4" />
-      <span>色</span>
-      <Select value={color} onValueChange={handleScalebarColorChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="スケールバーの色" />
-        </SelectTrigger>
-        <SelectContent>
-          {SCALEBAR_COLOR.map((item) => {
-            return (
-              <SelectItem value={`${item}`} key={item}>
-                {item}
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
-      <Separator className="my-4" />
-      <span>スケールバーの長さ</span>
-      <Input
-        type="number"
-        onChange={(e) =>
-          setMagConf((prev) => {
-            return {
-              ...prev,
-              [objLens]: {
-                ...prev[objLens],
-                length: Number(e.target.value) || 0,
-              },
-            };
-          })
-        }
-        value={magConf[objLens].length}
-      />
-      <Separator className="my-4" />
-      <span>スケールバーの太さ</span>
-      <Input
-        type="number"
-        onChange={(e) =>
-          updateScalebarConfig({ lineWidth: Number(e.target.value) || 0 })
-        }
-        value={lineWidth}
-      />
-      <Separator className="my-4" />
-      <span>文字の大きさ</span>
-      <Input
-        type="number"
-        onChange={(e) =>
-          updateScalebarConfig({ fontSize: Number(e.target.value) || 0 })
-        }
-        value={fontSize}
-      />
-      <Separator className="my-4" />
-      <span>文字の太さ</span>
-      <Select value={fontWeight} onValueChange={handleFontWeightChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="文字の太さ" />
-        </SelectTrigger>
-        <SelectContent>
-          {FONT_WEIGHT_OPTIONS.map((item) => {
-            return (
-              <SelectItem value={`${item}`} key={item}>
-                {item}
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
+    <div className="min-w-72 p-6 h-screen">
+      <ScrollArea className="h-[calc(100vh-3rem)]">
+        <span>倍率</span>
+        <Select
+          value={objLens ?? "x200"}
+          onValueChange={handleObjLensChange}
+          disabled={!loadedImages.length}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="スケールバーの色" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.keys(DEFAULT_MAGNIFICATION_CONFIG).map((item) => {
+              return (
+                <SelectItem value={`${item}`} key={item}>
+                  {item}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+        <Separator className="my-4" />
+        <span>色</span>
+        <Select value={color} onValueChange={handleScalebarColorChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="スケールバーの色" />
+          </SelectTrigger>
+          <SelectContent>
+            {SCALEBAR_COLOR.map((item) => {
+              return (
+                <SelectItem value={`${item}`} key={item}>
+                  {item}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+        <Separator className="my-4" />
+        <span>スケールバーの長さ</span>
+        <Input
+          type="number"
+          onChange={(e) =>
+            setMagConf((prev) => {
+              return {
+                ...prev,
+                [objLens]: {
+                  ...prev[objLens],
+                  length: Number(e.target.value) || 0,
+                },
+              };
+            })
+          }
+          value={magConf[objLens].length}
+        />
+        <Separator className="my-4" />
+        <span>スケールバーの太さ</span>
+        <Input
+          type="number"
+          onChange={(e) =>
+            updateScalebarConfig({ lineWidth: Number(e.target.value) || 0 })
+          }
+          value={lineWidth}
+        />
+        <Separator className="my-4" />
+        <span>文字の大きさ</span>
+        <Input
+          type="number"
+          onChange={(e) =>
+            updateScalebarConfig({ fontSize: Number(e.target.value) || 0 })
+          }
+          value={fontSize}
+        />
+        <Separator className="my-4" />
+        <span>文字の太さ</span>
+        <Select value={fontWeight} onValueChange={handleFontWeightChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="文字の太さ" />
+          </SelectTrigger>
+          <SelectContent>
+            {FONT_WEIGHT_OPTIONS.map((item) => {
+              return (
+                <SelectItem value={`${item}`} key={item}>
+                  {item}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+      </ScrollArea>
     </div>
   );
 };
