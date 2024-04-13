@@ -10,7 +10,6 @@ export const DEFAULT_MAGNIFICATION_CONFIG: Magnification = {
 } as const;
 
 export const DEFAULT_SCALEBAR_STATE: Scalebar = {
-  color: "white",
   lineWidth: 10,
   fontSize: 75,
   fontWeight: "normal",
