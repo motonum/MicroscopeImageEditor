@@ -8,7 +8,7 @@ export const expectMagnification = (
   name: string
 ): ObjlensOption | undefined => {
   const regex =
-    /((?<=[ｘxX×✕])(40|100|200|400|500))|((40|100|200|400|500)(?=[ｘxX×✕倍]))/;
+    /((?<=[ｘxX×✕])(500|400|200|100|40))|((500|400|200|100|40)(?=[ｘxX×✕倍]))/;
   const match = regex.exec(name)?.[0];
   const objlens = `x${match}`;
   if (isObjlensOption(objlens)) return objlens;
