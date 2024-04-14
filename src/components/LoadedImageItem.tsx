@@ -35,8 +35,8 @@ const LoadedImageItem = forwardRef<ExecDownloadRef, Props>(
           <Picture imageIndex={index} ref={ref} />
           {hover && (
             <Button
-              className="absolute top-1 right-1 hover:bg-red-800"
               onClick={() => deleteLoadedImage(index)}
+              className="absolute top-1 right-1 hover:bg-destructive"
             >
               <DeleteIcon color={"#ffffff"} />
             </Button>
