@@ -9,5 +9,5 @@ export default defineConfig({
       "@": "/src",
     },
   },
-  base: "/<REPO>/",
+  base: "/MicroscopeImageEditor/",
 });
