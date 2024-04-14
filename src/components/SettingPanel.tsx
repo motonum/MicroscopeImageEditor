@@ -1,4 +1,3 @@
-import { Input } from "@/components/ui/input";
 import { DEFAULT_MAGNIFICATION_CONFIG } from "@/constant/config";
 import {
   SCALEBAR_COLOR_OPTIONS,
@@ -27,6 +26,7 @@ import {
 } from "@/state/imageState";
 import { useCallback, useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import NumericInput from "@/components/NumericInput";
 
 const SettingPanel = () => {
   const [{ fontSize, lineWidth, fontWeight }] = useAtom(scalebarAtom);
@@ -135,43 +135,39 @@ const SettingPanel = () => {
           </Select>
           <Separator className="my-4" />
           <span>スケールバーの長さ</span>
-          <Input
-            type="number"
-            onChange={(e) =>
-              setMagConf((prev) => {
-                return {
-                  ...prev,
-                  [objLens]: {
-                    ...prev[objLens],
-                    length: Number(e.target.value) || 0,
-                  },
-                };
-              })
-            }
-            value={magConf[objLens].length}
-          />
+            <NumericInput
+              outerState={magConf[objLens].length}
+              setState={(value: number) => {
+                setMagConf((prev) => {
+                  return {
+                    ...prev,
+                    [objLens]: {
+                      ...prev[objLens],
+                      length: value,
+                    },
+                  };
+                });
+              }}
+              disabled={workbenchIndex === undefined}
+            />
           <Separator className="my-4" />
           <span>スケールバーの太さ</span>
-          <Input
-            type="number"
-            onChange={(e) =>
-              updateScalebarConfig({
-                lineWidth: Number(e.target.value) || 0,
-              })
-            }
-            value={lineWidth}
-          />
+            <NumericInput
+              setState={(value) =>
+                updateScalebarConfig({
+                  lineWidth: value,
+                })
+              }
+              outerState={lineWidth}
+              disabled={workbenchIndex === undefined}
+            />
           <Separator className="my-4" />
           <span>文字の大きさ</span>
-          <Input
-            type="number"
-            onChange={(e) =>
-              updateScalebarConfig({
-                fontSize: Number(e.target.value) || 0,
-              })
-            }
-            value={fontSize}
-          />
+            <NumericInput
+              setState={(value) => updateScalebarConfig({ fontSize: value })}
+              outerState={fontSize}
+              disabled={workbenchIndex === undefined}
+            />
           <Separator className="my-4" />
           <span>文字の太さ</span>
           <Select value={fontWeight} onValueChange={handleFontWeightChange}>
