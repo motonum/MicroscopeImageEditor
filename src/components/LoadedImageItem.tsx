@@ -16,13 +16,13 @@ type Props = {
 const LoadedImageItem = forwardRef<ExecDownloadRef, Props>(
   ({ index, loadedImage, active }, ref) => {
     const [, deleteLoadedImage] = useAtom(imageDeleterAtom);
-    const [, setOnWorkbenchIndex] = useAtom(workbenchIndexAtom);
+    const [workbenchIndex, setWorkbenchIndex] = useAtom(workbenchIndexAtom);
     const [hover, setHover] = useState(false);
 
     return (
       <div
         className="p-4 relative"
-        onClick={() => setOnWorkbenchIndex(index)}
+        onClick={() => setWorkbenchIndex(index)}
         key={index}
         onMouseOver={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
