@@ -98,14 +98,14 @@ const SettingPanel = () => {
     <div className="min-w-72 p-6 h-screen">
       <ScrollArea className="h-[calc(100vh-3rem-40px)]">
         <div className="mx-1">
-          <span>倍率</span>
+          <div>倍率</div>
           <Select
             value={objLens ?? "x200"}
             onValueChange={handleObjLensChange}
-            disabled={!loadedImages.length}
+            disabled={workbenchIndex === undefined}
           >
             <SelectTrigger>
-              <SelectValue placeholder="スケールバーの色" />
+              <SelectValue placeholder="倍率" />
             </SelectTrigger>
             <SelectContent>
               {Object.keys(DEFAULT_MAGNIFICATION_CONFIG).map((item) => {
@@ -117,9 +117,15 @@ const SettingPanel = () => {
               })}
             </SelectContent>
           </Select>
+
           <Separator className="my-4" />
-          <span>色</span>
-          <Select value={color} onValueChange={handleScalebarColorChange}>
+
+          <div>色</div>
+          <Select
+            value={color}
+            onValueChange={handleScalebarColorChange}
+            disabled={workbenchIndex === undefined}
+          >
             <SelectTrigger>
               <SelectValue placeholder="スケールバーの色" />
             </SelectTrigger>
@@ -133,8 +139,11 @@ const SettingPanel = () => {
               })}
             </SelectContent>
           </Select>
+
           <Separator className="my-4" />
-          <span>スケールバーの長さ</span>
+
+          <div>スケールバーの長さ</div>
+          <div className="flex gap-3">
             <NumericInput
               outerState={magConf[objLens].length}
               setState={(value: number) => {
@@ -150,8 +159,13 @@ const SettingPanel = () => {
               }}
               disabled={workbenchIndex === undefined}
             />
+            <div className="flex items-center">um</div>
+          </div>
+
           <Separator className="my-4" />
-          <span>スケールバーの太さ</span>
+
+          <div>スケールバーの太さ</div>
+          <div className="flex gap-3">
             <NumericInput
               setState={(value) =>
                 updateScalebarConfig({
@@ -161,16 +175,29 @@ const SettingPanel = () => {
               outerState={lineWidth}
               disabled={workbenchIndex === undefined}
             />
+            <div className="flex items-center">px</div>
+          </div>
+
           <Separator className="my-4" />
-          <span>文字の大きさ</span>
+
+          <div>文字の大きさ</div>
+          <div className="flex gap-3">
             <NumericInput
               setState={(value) => updateScalebarConfig({ fontSize: value })}
               outerState={fontSize}
               disabled={workbenchIndex === undefined}
             />
+            <div className="flex items-center">px</div>
+          </div>
+
           <Separator className="my-4" />
-          <span>文字の太さ</span>
-          <Select value={fontWeight} onValueChange={handleFontWeightChange}>
+
+          <div>文字の太さ</div>
+          <Select
+            value={fontWeight}
+            onValueChange={handleFontWeightChange}
+            disabled={workbenchIndex === undefined}
+          >
             <SelectTrigger>
               <SelectValue placeholder="文字の太さ" />
             </SelectTrigger>
