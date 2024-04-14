@@ -11,10 +11,10 @@ import {
 } from "@radix-ui/react-tooltip";
 import { useMeasure } from "@react-hookz/web";
 import { useAtom } from "jotai";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 const Workbench = () => {
-  const [workbenchIndex] = useAtom(workbenchIndexAtom);
+  const [workbenchIndex, setWorkbenchIndex] = useAtom(workbenchIndexAtom);
   const [loadedImages] = useAtom(imageAtom);
   const execDownloadRef = useRef<ExecDownloadRef>(null);
   const [fileNameSize, fileNameRef] = useMeasure<HTMLDivElement>();
@@ -28,6 +28,12 @@ const Workbench = () => {
       return "";
     return loadedImages[workbenchIndex].name;
   }, [loadedImages, workbenchIndex]);
+
+  useEffect(() => {
+    if (workbenchIndex !== undefined && !loadedImages[workbenchIndex]) {
+      setWorkbenchIndex(undefined);
+    }
+  }, [workbenchIndex, loadedImages, setWorkbenchIndex]);
 
   return (
     <div className="grow min-w-0 px-6 mt-6">
