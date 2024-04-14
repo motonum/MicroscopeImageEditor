@@ -4,7 +4,7 @@ import LoadedImages from "@/components/LoadedImages";
 import Workbench from "@/components/Workbench";
 import { Separator } from "@/components/ui/separator";
 import { useDropzone } from "react-dropzone";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { readFiles } from "@/util/readFile";
 import { useAtom } from "jotai";
 import { imageAdderAtom } from "@/state/imageState";
@@ -20,6 +20,18 @@ const App = () => {
     accept: { "image/*": [] },
     noClick: true,
   });
+
+  const handleUnload = useCallback((e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = "";
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", handleUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleUnload);
+    };
+  }, []);
 
   return (
     <div className="flex min-h-screen" {...getRootProps()}>
