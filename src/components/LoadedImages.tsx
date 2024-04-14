@@ -70,7 +70,7 @@ const LoadedImages = () => {
   });
 
   return (
-    <div className="min-w-72 p-6 h-screen" {...getRootProps()}>
+    <div className="w-72 p-6 h-screen" {...getRootProps()}>
       <input
         type="file"
         onChange={handleInputFile}
@@ -88,7 +88,7 @@ const LoadedImages = () => {
       >
         ファイルを選択
       </Button>
-      <ScrollArea className="h-[calc(100vh-8rem)]">
+      <ScrollArea className="h-[calc(100vh-8rem)] w-full">
         {loadedImages.map((loadedImage, index) => (
           <LoadedImageItem
             {...{ loadedImage, index }}

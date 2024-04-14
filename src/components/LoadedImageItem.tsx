@@ -21,14 +21,14 @@ const LoadedImageItem = forwardRef<ExecDownloadRef, Props>(
 
     return (
       <div
-        className="p-4 relative"
+        className="p-4 relative w-[15rem]"
         onClick={() => setWorkbenchIndex(index)}
         key={index}
         onMouseOver={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
         <div
-          className={`relative rounded overflow-hidden border-2 border-primary  ${
+          className={`w-full relative rounded overflow-hidden border-2 border-primary  ${
             active ? "" : "border-transparent"
           }`}
         >
@@ -48,7 +48,9 @@ const LoadedImageItem = forwardRef<ExecDownloadRef, Props>(
             </Button>
           )}
         </div>
-        <div>{loadedImage.name}</div>
+        <div className="overflow-ellipsis overflow-hidden text-nowrap w-full">
+          {loadedImage.name}
+        </div>
       </div>
     );
   }
