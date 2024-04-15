@@ -24,6 +24,7 @@ import {
 } from "@/state/imageState";
 import { useAtom } from "jotai";
 import { ExecDownloadRef } from "@/type/execDownloadRef";
+import { updateObject } from "@/util/updateObject";
 
 type Props = {
   imageIndex?: number;
@@ -45,8 +46,9 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
     const [imageHeight, setImageHeight] = useState<number>(1200);
     const [loadedImages] = useAtom(imageAtom);
     const stageRef = useRef<Konva.Stage>(null);
-    const [{ fontSize, lineWidth, fontWeight, scalebarPosX, scalebarPosY }] =
-      useAtom(scalebarAtom);
+    const [scalebarConfig] = useAtom(scalebarAtom);
+    const { fontSize, lineWidth, fontWeight, scalebarPosX, scalebarPosY } =
+      scalebarConfig;
     const [, updateScalebarConfig] = useAtom(scalebarUpdaterAtom);
 
     const [magConf] = useAtom(magnificationConfigAtom);
@@ -191,11 +193,21 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
     const handleDragEnd = useCallback(() => {
       const x = scalebarGroupRef.current?.x();
       const y = scalebarGroupRef.current?.y();
-      if (x !== undefined && y !== undefined)
+      if (x !== undefined && y !== undefined) {
+        localStorage.setItem(
+          "scalebar",
+          JSON.stringify(
+            updateObject(scalebarConfig, {
+              scalebarPosX: imageWidth - (x + scalebarGroupWidth),
+              scalebarPosY: imageHeight - (y + scalebarGroupHeight),
+            })
+          )
+        );
         updateScalebarConfig({
           scalebarPosX: imageWidth - (x + scalebarGroupWidth),
           scalebarPosY: imageHeight - (y + scalebarGroupHeight),
         });
+      }
     }, [
       image,
       scalebarGroupRef,

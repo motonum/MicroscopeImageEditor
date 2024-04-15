@@ -27,9 +27,10 @@ import {
 import { useCallback, useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import NumericInput from "@/components/NumericInput";
+import { updateObject } from "@/util/updateObject";
 
 const SettingPanel = () => {
-  const [{ fontSize, lineWidth, fontWeight }] = useAtom(scalebarAtom);
+  const [scalebarConfig] = useAtom(scalebarAtom);
   const [loadedImages, setLoadedImages] = useAtom(imageAtom);
   const [magConf, setMagConf] = useAtom(magnificationConfigAtom);
   const [, updateScalebarConfig] = useAtom(scalebarUpdaterAtom);
@@ -91,7 +92,13 @@ const SettingPanel = () => {
 
   // 文字の太さの切り替え
   const handleFontWeightChange = (v: string) => {
-    isFontWeight(v) && updateScalebarConfig({ fontWeight: v });
+    if (isFontWeight(v)) {
+      localStorage.setItem(
+        "scalebar",
+        JSON.stringify(updateObject(scalebarConfig, { fontWeight: v }))
+      );
+      updateScalebarConfig({ fontWeight: v });
+    }
   };
 
   return (
@@ -167,12 +174,18 @@ const SettingPanel = () => {
           <div>スケールバーの太さ</div>
           <div className="flex gap-3">
             <NumericInput
-              setState={(value) =>
+              setState={(value) => {
+                localStorage.setItem(
+                  "scalebar",
+                  JSON.stringify(
+                    updateObject(scalebarConfig, { lineWidth: value })
+                  )
+                );
                 updateScalebarConfig({
                   lineWidth: value,
-                })
-              }
-              outerState={lineWidth}
+                });
+              }}
+              outerState={scalebarConfig.lineWidth}
               disabled={workbenchIndex === undefined}
             />
             <div className="flex items-center">px</div>
@@ -183,8 +196,16 @@ const SettingPanel = () => {
           <div>文字の大きさ</div>
           <div className="flex gap-3">
             <NumericInput
-              setState={(value) => updateScalebarConfig({ fontSize: value })}
-              outerState={fontSize}
+              setState={(value) => {
+                localStorage.setItem(
+                  "scalebar",
+                  JSON.stringify(
+                    updateObject(scalebarConfig, { fontSize: value })
+                  )
+                );
+                updateScalebarConfig({ fontSize: value });
+              }}
+              outerState={scalebarConfig.fontSize}
               disabled={workbenchIndex === undefined}
             />
             <div className="flex items-center">px</div>
@@ -194,7 +215,7 @@ const SettingPanel = () => {
 
           <div>文字の太さ</div>
           <Select
-            value={fontWeight}
+            value={scalebarConfig.fontWeight}
             onValueChange={handleFontWeightChange}
             disabled={workbenchIndex === undefined}
           >

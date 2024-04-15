@@ -25,7 +25,16 @@ export const imageDeleterAtom = atom(null, (get, set, index: number) => {
 
 export const workbenchIndexAtom = atom<number | undefined>(undefined);
 
-export const scalebarAtom = atom<Scalebar>({ ...DEFAULT_SCALEBAR_STATE });
+const getFromLocalStorage = (): Scalebar | null => {
+  const value: string | null = localStorage.getItem("scalebar");
+  if (!value) return null;
+  return JSON.parse(value);
+};
+
+export const getScalebarInitialState = () => {
+  return { ...DEFAULT_SCALEBAR_STATE, ...getFromLocalStorage() };
+};
+export const scalebarAtom = atom<Scalebar>({ ...getScalebarInitialState() });
 
 export const scalebarUpdaterAtom = atom(
   null,
