@@ -1,4 +1,4 @@
-export const updateObject = <T>(scalebar: T, updateItem: Partial<T>): T => ({
-  ...scalebar,
+export const updateObject = <T>(object: T, updateItem: Partial<T>): T => ({
+  ...object,
   ...updateItem,
 });
