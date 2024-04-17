@@ -81,6 +81,7 @@ const LoadedImages = () => {
           });
         }}
         className="h-10 w-full box-border"
+        disabled={!loadedImages.length}
       >
         すべて保存
       </Button>
