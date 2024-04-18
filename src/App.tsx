@@ -8,6 +8,7 @@ import { useCallback, useEffect } from "react";
 import { readFiles } from "@/util/readFile";
 import { useAtom } from "jotai";
 import { imageAdderAtom } from "@/state/imageState";
+import Header from "@/components/Header";
 
 const App = () => {
   const [, addLoadedImage] = useAtom(imageAdderAtom);
@@ -34,12 +35,15 @@ const App = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen" {...getRootProps()}>
-      <LoadedImages />
-      <Separator orientation="vertical" className="h-screen" />
-      <Workbench />
-      <Separator orientation="vertical" className="h-screen" />
-      <SettingPanel />
+    <div className="flex flex-col h-screen">
+      <Header />
+      <div className="flex flex-grow min-h-0" {...getRootProps()}>
+        <LoadedImages />
+        <Separator orientation="vertical" className="h-full" />
+        <Workbench />
+        <Separator orientation="vertical" className="h-full" />
+        <SettingPanel />
+      </div>
     </div>
   );
 };

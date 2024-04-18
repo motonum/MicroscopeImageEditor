@@ -39,7 +39,7 @@ const LoadedImages = () => {
   };
 
   return (
-    <div className="w-72 p-6 h-screen">
+    <div className="flex flex-col flex-grow-0 w-72 p-6 h-full">
       <input
         type="file"
         onChange={handleInputFile}
@@ -57,7 +57,7 @@ const LoadedImages = () => {
       >
         ファイルを選択
       </Button>
-      <ScrollArea className="h-[calc(100vh-8rem)] w-full">
+      <ScrollArea className="h-full w-full min-h-0 flex-grow">
         {loadedImages.map((loadedImage, index) => (
           <LoadedImageItem
             {...{ loadedImage, index }}

@@ -102,8 +102,8 @@ const SettingPanel = () => {
   };
 
   return (
-    <div className="min-w-72 p-6 h-screen">
-      <ScrollArea className="h-[calc(100vh-3rem-40px)]">
+    <div className="w-72 p-6 h-full flex-grow-0 flex-shrink-0">
+      <ScrollArea className="h-full">
         <div className="mx-1">
           <div>倍率</div>
           <Select
