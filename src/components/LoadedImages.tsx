@@ -14,7 +14,14 @@ import { ExecDownloadRef } from "@/type/execDownloadRef";
 
 import { readFiles } from "@/util/readFile";
 
-const LoadedImages = () => {
+import { cn } from "@/lib/utils";
+import { ClassValue } from "clsx";
+
+type Props = {
+  className?: ClassValue;
+};
+
+const LoadedImages: React.FC<Props> = ({ className }) => {
   const [loadedImages] = useAtom(imageAtom);
   const [workbenchIndex] = useAtom(workbenchIndexAtom);
   const [, addLoadedImage] = useAtom(imageAdderAtom);
@@ -39,7 +46,7 @@ const LoadedImages = () => {
   };
 
   return (
-    <div className="flex flex-col flex-grow-0 w-72 p-6 h-full">
+    <div className={cn("flex flex-col flex-grow-0 w-72 p-6 h-full", className)}>
       <input
         type="file"
         onChange={handleInputFile}
