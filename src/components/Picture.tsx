@@ -27,7 +27,7 @@ import { ExecDownloadRef } from "@/type/execDownloadRef";
 import { updateObject } from "@/util/updateObject";
 
 type Props = {
-  imageIndex?: number;
+  imageId?: Symbol;
   className?: string;
   downloadable?: boolean;
   draggable?: boolean;
@@ -35,7 +35,7 @@ type Props = {
 
 const Picture = forwardRef<ExecDownloadRef, Props>(
   (
-    { imageIndex, className = "", downloadable = false, draggable = false },
+    { imageId, className = "", downloadable = false, draggable = false },
     ref
   ) => {
     const [measurements, canvasContainerRef] = useMeasure<HTMLDivElement>();
@@ -59,15 +59,16 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
       objLens = "x200",
       color = "white",
     } = useMemo(() => {
-      if (imageIndex === undefined || !loadedImages?.[imageIndex])
+      const image = loadedImages.find((element) => element.id === imageId);
+      if (imageId === undefined || !image)
         return {
           image: undefined,
           name: undefined,
           objLens: undefined,
           color: undefined,
         };
-      return loadedImages[imageIndex];
-    }, [loadedImages, imageIndex]);
+      return image;
+    }, [loadedImages, imageId]);
 
     useImperativeHandle(ref, () => {
       return {
@@ -214,7 +215,7 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
       fontSize,
       lineWidth,
       scalebarGroupWidth,
-      imageIndex,
+      imageId,
       imageWidth,
       imageHeight,
     ]);

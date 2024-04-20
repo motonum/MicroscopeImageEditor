@@ -1,9 +1,5 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  imageAdderAtom,
-  imageAtom,
-  workbenchIndexAtom,
-} from "@/state/imageState";
+import { imageAdderAtom, imageAtom, selectedIdAtom } from "@/state/imageState";
 
 import { useAtom } from "jotai";
 
@@ -23,7 +19,7 @@ type Props = {
 
 const LoadedImages: React.FC<Props> = ({ className }) => {
   const [loadedImages] = useAtom(imageAtom);
-  const [workbenchIndex] = useAtom(workbenchIndexAtom);
+  const [selectedId] = useAtom(selectedIdAtom);
   const [, addLoadedImage] = useAtom(imageAdderAtom);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imagesRef = useRef<Map<Symbol, ExecDownloadRef>>();
@@ -69,7 +65,7 @@ const LoadedImages: React.FC<Props> = ({ className }) => {
           <LoadedImageItem
             {...{ loadedImage, index }}
             key={index}
-            active={index === workbenchIndex}
+            active={loadedImage.id === selectedId}
             ref={(node) => {
               const map = getMap();
               if (node) {

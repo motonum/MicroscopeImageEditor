@@ -21,7 +21,7 @@ import {
   imageAtom,
   magnificationConfigAtom,
   scalebarUpdaterAtom,
-  workbenchIndexAtom,
+  selectedIdAtom,
   imageUpdaterAtom,
 } from "@/state/imageState";
 import { useCallback, useMemo } from "react";
@@ -34,18 +34,19 @@ const SettingPanel = () => {
   const [loadedImages, setLoadedImages] = useAtom(imageAtom);
   const [magConf, setMagConf] = useAtom(magnificationConfigAtom);
   const [, updateScalebarConfig] = useAtom(scalebarUpdaterAtom);
-  const [workbenchIndex] = useAtom(workbenchIndexAtom);
+  const [selectedId] = useAtom(selectedIdAtom);
   const [, updateLoadedImage] = useAtom(imageUpdaterAtom);
   const { objLens = "x200", color = "white" } = useMemo(() => {
-    if (workbenchIndex === undefined || !loadedImages?.[workbenchIndex])
+    const image = loadedImages.find((element) => element.id === selectedId);
+    if (selectedId === undefined || !image)
       return {
         image: undefined,
         name: undefined,
         objLens: undefined,
         color: undefined,
       };
-    return loadedImages[workbenchIndex];
-  }, [loadedImages, workbenchIndex]);
+    return image;
+  }, [loadedImages, selectedId]);
 
   // 対物レンズの倍率の型であることのテスト
   const isObjLensOption = useCallback(
@@ -59,10 +60,13 @@ const SettingPanel = () => {
   const handleObjLensChange = (v: string) => {
     isObjLensOption(v) &&
       setLoadedImages((prev) => {
-        if (workbenchIndex === undefined) return prev;
-        return prev.toSpliced(workbenchIndex, 1, {
-          ...prev[workbenchIndex],
-          objLens: v,
+        if (selectedId === undefined) return prev;
+        return prev.map((item) => {
+          if (item.id !== selectedId) return item;
+          return {
+            ...item,
+            objLens: v,
+          };
         });
       });
   };
@@ -78,8 +82,8 @@ const SettingPanel = () => {
   // スケールバーの色の切り替え
   const handleScalebarColorChange = (v: string) => {
     isScalebarColor(v) &&
-      workbenchIndex !== undefined &&
-      updateLoadedImage(workbenchIndex, { color: v });
+      selectedId !== undefined &&
+      updateLoadedImage(selectedId, { color: v });
   };
 
   // 文字の太さの型であるかのテスト
@@ -109,7 +113,7 @@ const SettingPanel = () => {
           <Select
             value={objLens ?? "x200"}
             onValueChange={handleObjLensChange}
-            disabled={workbenchIndex === undefined}
+            disabled={selectedId === undefined}
           >
             <SelectTrigger>
               <SelectValue placeholder="倍率" />
@@ -131,7 +135,7 @@ const SettingPanel = () => {
           <Select
             value={color}
             onValueChange={handleScalebarColorChange}
-            disabled={workbenchIndex === undefined}
+            disabled={selectedId === undefined}
           >
             <SelectTrigger>
               <SelectValue placeholder="スケールバーの色" />
@@ -164,7 +168,7 @@ const SettingPanel = () => {
                   };
                 });
               }}
-              disabled={workbenchIndex === undefined}
+              disabled={selectedId === undefined}
             />
             <div className="flex items-center">um</div>
           </div>
@@ -186,7 +190,7 @@ const SettingPanel = () => {
                 });
               }}
               outerState={scalebarConfig.lineWidth}
-              disabled={workbenchIndex === undefined}
+              disabled={selectedId === undefined}
             />
             <div className="flex items-center">px</div>
           </div>
@@ -206,7 +210,7 @@ const SettingPanel = () => {
                 updateScalebarConfig({ fontSize: value });
               }}
               outerState={scalebarConfig.fontSize}
-              disabled={workbenchIndex === undefined}
+              disabled={selectedId === undefined}
             />
             <div className="flex items-center">px</div>
           </div>
@@ -217,7 +221,7 @@ const SettingPanel = () => {
           <Select
             value={scalebarConfig.fontWeight}
             onValueChange={handleFontWeightChange}
-            disabled={workbenchIndex === undefined}
+            disabled={selectedId === undefined}
           >
             <SelectTrigger>
               <SelectValue placeholder="文字の太さ" />
