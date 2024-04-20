@@ -2,7 +2,7 @@ import Picture from "@/components/Picture";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { imageAtom, workbenchIndexAtom } from "@/state/imageState";
+import { imageAtom, selectedIdAtom } from "@/state/imageState";
 import { ExecDownloadRef } from "@/type/execDownloadRef";
 import {
   Tooltip,
@@ -14,37 +14,37 @@ import { useAtom } from "jotai";
 import { useEffect, useMemo, useRef } from "react";
 
 const Workbench = () => {
-  const [workbenchIndex, setWorkbenchIndex] = useAtom(workbenchIndexAtom);
+  const [selectedId, setSelectedId] = useAtom(selectedIdAtom);
   const [loadedImages] = useAtom(imageAtom);
   const execDownloadRef = useRef<ExecDownloadRef>(null);
   const [fileNameSize, fileNameRef] = useMeasure<HTMLDivElement>();
   const [fileNameWrapperSize, fileNameWrapperRef] =
     useMeasure<HTMLDivElement>();
   const imageName = useMemo(() => {
-    if (
-      workbenchIndex === undefined ||
-      loadedImages[workbenchIndex] === undefined
-    )
-      return "";
-    return loadedImages[workbenchIndex].name;
-  }, [loadedImages, workbenchIndex]);
+    const image = loadedImages.find((element) => element.id === selectedId);
+    if (selectedId === undefined || image === undefined) return "";
+    return image.name;
+  }, [loadedImages, selectedId]);
 
   useEffect(() => {
-    if (workbenchIndex !== undefined && !loadedImages[workbenchIndex]) {
-      setWorkbenchIndex(undefined);
+    if (
+      selectedId !== undefined &&
+      !loadedImages.find((element) => element.id === selectedId)
+    ) {
+      setSelectedId(undefined);
     }
-  }, [workbenchIndex, loadedImages, setWorkbenchIndex]);
+  }, [selectedId, loadedImages, setSelectedId]);
 
   return (
     <div className="grow min-w-0 px-6 mt-6">
       <Picture
-        imageIndex={workbenchIndex}
+        imageId={selectedId}
         className="max-w-2xl mx-auto p-0"
         downloadable
         draggable
         ref={execDownloadRef}
       />
-      {workbenchIndex !== undefined && (
+      {selectedId !== undefined && (
         <div className="flex max-w-2xl mx-auto mt-3 gap-2">
           <div
             ref={fileNameWrapperRef}

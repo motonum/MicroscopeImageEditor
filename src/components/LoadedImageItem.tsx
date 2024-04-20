@@ -1,29 +1,27 @@
 import DeleteIcon from "@/components/Icon/DeleteIcon";
 import Picture from "@/components/Picture";
 import { Button } from "@/components/ui/button";
-import { imageDeleterAtom, workbenchIndexAtom } from "@/state/imageState";
+import { imageDeleterAtom, selectedIdAtom } from "@/state/imageState";
 import { ExecDownloadRef } from "@/type/execDownloadRef";
 import { LoadedImage } from "@/type/imageState";
 import { useAtom } from "jotai";
 import { forwardRef, useState } from "react";
 
 type Props = {
-  index: number;
   loadedImage: LoadedImage;
   active: boolean;
 };
 
 const LoadedImageItem = forwardRef<ExecDownloadRef, Props>(
-  ({ index, loadedImage, active }, ref) => {
+  ({ loadedImage, active }, ref) => {
     const [, deleteLoadedImage] = useAtom(imageDeleterAtom);
-    const [workbenchIndex, setWorkbenchIndex] = useAtom(workbenchIndexAtom);
+    const [selectedId, setSelectedId] = useAtom(selectedIdAtom);
     const [hover, setHover] = useState(false);
 
     return (
       <div
         className="p-4 relative w-[15rem]"
-        onClick={() => setWorkbenchIndex(index)}
-        key={index}
+        onClick={() => setSelectedId(loadedImage.id)}
         onMouseOver={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
@@ -32,16 +30,16 @@ const LoadedImageItem = forwardRef<ExecDownloadRef, Props>(
             active ? "" : "border-transparent"
           }`}
         >
-          <Picture imageIndex={index} ref={ref} />
+          <Picture imageId={loadedImage.id} ref={ref} />
           {hover && (
             <Button
               className="absolute top-1 right-1 hover:bg-destructive"
               onClick={(e) => {
                 e.stopPropagation();
-                if (index === workbenchIndex) {
-                  setWorkbenchIndex(undefined);
+                if (loadedImage.id === selectedId) {
+                  setSelectedId(undefined);
                 }
-                deleteLoadedImage(index);
+                deleteLoadedImage(loadedImage.id);
               }}
             >
               <DeleteIcon color={"#ffffff"} />

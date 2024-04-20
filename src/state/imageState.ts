@@ -8,22 +8,30 @@ import { atom } from "jotai";
 export const imageAtom = atom<LoadedImage[]>([]);
 export const imageUpdaterAtom = atom(
   null,
-  (get, set, index: number, newImageItems: Partial<LoadedImage>) => {
-    if (!get(imageAtom)[index]) return;
+  (get, set, id: Symbol, newImageItems: Partial<LoadedImage>) => {
+    const image = get(imageAtom).find((element) => element.id === id);
+    if (!image) return;
     set(imageAtom, (prev) =>
-      prev.toSpliced(index, 1, { ...prev[index], ...newImageItems })
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        return {
+          ...item,
+          ...newImageItems,
+        };
+      })
     );
   }
 );
 export const imageAdderAtom = atom(null, (_, set, image: LoadedImage) => {
   set(imageAtom, (prev) => [...prev, image]);
 });
-export const imageDeleterAtom = atom(null, (get, set, index: number) => {
-  if (!get(imageAtom)[index]) return;
-  set(imageAtom, (prev) => prev.toSpliced(index, 1));
+export const imageDeleterAtom = atom(null, (get, set, id: Symbol) => {
+  const image = get(imageAtom).find((element) => element.id === id);
+  if (!image) return;
+  set(imageAtom, (prev) => prev.filter((element) => element.id !== id));
 });
 
-export const workbenchIndexAtom = atom<number | undefined>(undefined);
+export const selectedIdAtom = atom<Symbol | undefined>(undefined);
 
 const getFromLocalStorage = (): Scalebar | null => {
   const value: string | null = localStorage.getItem("scalebar");
