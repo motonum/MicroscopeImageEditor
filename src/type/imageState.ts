@@ -1,18 +1,28 @@
 import {
   FontWeightOption,
-  ObjlensOption,
+  InvertedObjlensOption,
   ScalebarColorOption,
+  UprightObjlensOption,
 } from "@/type/options";
+
+export type MagnificationOption =
+  | {
+      microscopeType: "upright";
+      objLens: UprightObjlensOption;
+    }
+  | {
+      microscopeType: "inverted";
+      objLens: InvertedObjlensOption;
+    };
 
 export type LoadedImage = {
   id: Symbol;
   image: HTMLImageElement;
   name: string;
-  objLens: ObjlensOption;
   color: ScalebarColorOption;
-} & Partial<Scalebar> & {
-    length?: number;
-  };
+} & {
+  length?: number;
+} & MagnificationOption;
 
 export type Scalebar = {
   fontSize: number;
@@ -20,8 +30,4 @@ export type Scalebar = {
   scalebarPosX: number;
   scalebarPosY: number;
   fontWeight: FontWeightOption;
-};
-
-export type Magnification = {
-  [key in ObjlensOption]: { dpm: number; length: number };
 };

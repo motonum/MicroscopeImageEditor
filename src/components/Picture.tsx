@@ -18,13 +18,15 @@ import {
 } from "@/components/ui/context-menu";
 import {
   imageAtom,
-  magnificationConfigAtom,
   scalebarAtom,
+  scalebarLengthAtom,
   scalebarUpdaterAtom,
 } from "@/state/imageState";
 import { useAtom } from "jotai";
 import { ExecDownloadRef } from "@/type/execDownloadRef";
 import { updateObject } from "@/util/updateObject";
+import { getDPMConfig } from "@/util/getDPMConfig";
+import { getScalebarLength } from "@/util/getScalebarLength";
 
 type Props = {
   imageId?: Symbol;
@@ -47,17 +49,17 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
     const [loadedImages] = useAtom(imageAtom);
     const stageRef = useRef<Konva.Stage>(null);
     const [scalebarConfig] = useAtom(scalebarAtom);
+    const [scalebarLength] = useAtom(scalebarLengthAtom);
     const { fontSize, lineWidth, fontWeight, scalebarPosX, scalebarPosY } =
       scalebarConfig;
     const [, updateScalebarConfig] = useAtom(scalebarUpdaterAtom);
-
-    const [magConf] = useAtom(magnificationConfigAtom);
 
     const {
       image,
       name = "noname",
       objLens = "x200",
       color = "white",
+      microscopeType = "upright",
     } = useMemo(() => {
       const image = loadedImages.find((element) => element.id === imageId);
       if (imageId === undefined || !image)
@@ -66,6 +68,7 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
           name: undefined,
           objLens: undefined,
           color: undefined,
+          microscopeType: undefined,
         };
       return image;
     }, [loadedImages, imageId]);
@@ -111,22 +114,30 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
     }, []);
 
     // 画像上のスケールバーの長さの計算関数
-    const getDisplayScalebarLength = useCallback(
-      () => magConf[objLens].length * magConf[objLens].dpm * 1e-6, // um単位であるため
-      [magConf[objLens].dpm, magConf[objLens].length]
+    const displayScalebarLength = useMemo(
+      () =>
+        getScalebarLength(scalebarLength, microscopeType, objLens) *
+        getDPMConfig(microscopeType, objLens) *
+        1e-6, // um単位であるため
+      [getScalebarLength, getDPMConfig, scalebarLength, microscopeType, objLens]
     );
 
     // 文字も含めたスケールバーの幅
     const scalebarGroupWidth = useMemo(() => {
       return Math.max(
-        calcTextWidth(`${magConf[objLens].length}um`, fontSize) || 0,
-        getDisplayScalebarLength()
+        calcTextWidth(
+          `${getScalebarLength(scalebarLength, microscopeType, objLens)}um`,
+          fontSize
+        ) || 0,
+        displayScalebarLength
       );
     }, [
+      displayScalebarLength,
       calcTextWidth,
-      magConf[objLens].length,
+      scalebarLength,
       fontSize,
-      getDisplayScalebarLength,
+      objLens,
+      microscopeType,
     ]);
 
     // 文字も含めたスケールバーの高さ
@@ -136,13 +147,20 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
 
     // スケールバーのテキストの横幅
     const scaleTextWidth = useMemo(() => {
-      return calcTextWidth(`${magConf[objLens].length}um`, fontSize) || 0;
-    }, [calcTextWidth, magConf[objLens].length, fontSize]);
-
-    // スケールバーの横幅
-    const drawnScalebarLength = useMemo(() => {
-      return getDisplayScalebarLength();
-    }, [getDisplayScalebarLength]);
+      return (
+        calcTextWidth(
+          `${getScalebarLength(scalebarLength, microscopeType, objLens)}um`,
+          fontSize
+        ) || 0
+      );
+    }, [
+      calcTextWidth,
+      getScalebarLength,
+      scalebarLength,
+      microscopeType,
+      objLens,
+      fontSize,
+    ]);
 
     // 画像の縦横の寸法を取得
     useEffect(() => {
@@ -260,7 +278,11 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
                     onDragEnd={handleDragEnd}
                   >
                     <Text
-                      text={`${magConf[objLens].length}um`}
+                      text={`${getScalebarLength(
+                        scalebarLength,
+                        microscopeType,
+                        objLens
+                      )}um`}
                       fontSize={fontSize}
                       x={(scalebarGroupWidth - scaleTextWidth) / 2}
                       y={0}
@@ -276,9 +298,9 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
                       fontStyle={fontWeight}
                     />
                     <Line
-                      x={(scalebarGroupWidth - drawnScalebarLength) / 2}
+                      x={(scalebarGroupWidth - displayScalebarLength) / 2}
                       y={fontSize + lineWidth / 2}
-                      points={[0, 0, drawnScalebarLength, 0]}
+                      points={[0, 0, displayScalebarLength, 0]}
                       stroke={
                         color === "black"
                           ? "#000000"

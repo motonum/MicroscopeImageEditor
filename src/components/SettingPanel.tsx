@@ -1,11 +1,11 @@
-import { DEFAULT_MAGNIFICATION_CONFIG } from "@/constant/config";
 import {
   SCALEBAR_COLOR_OPTIONS,
   FONT_WEIGHT_OPTIONS,
   FontWeightOption,
   ScalebarColorOption,
-  OBJLENS_OPTIONS,
   ObjlensOption,
+  UPRIGHT_OBJLENS_OPTIONS,
+  INVERTED_OBJLENS_OPTIONS,
 } from "@/type/options";
 import {
   Select,
@@ -19,41 +19,57 @@ import { useAtom } from "jotai";
 import {
   scalebarAtom,
   imageAtom,
-  magnificationConfigAtom,
   scalebarUpdaterAtom,
   selectedIdAtom,
   imageUpdaterAtom,
+  scalebarLengthAtom,
+  scalebarLengthUpdaterAtom,
+  selectedImageAtom,
 } from "@/state/imageState";
 import { useCallback, useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import NumericInput from "@/components/NumericInput";
 import { updateObject } from "@/util/updateObject";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getScalebarLength } from "@/util/getScalebarLength";
+import {
+  isInvertedObjlensOption,
+  isMicroscopeType,
+  isSafeLoadedImage,
+  isUprightObjlensOption,
+} from "@/util/judgeMicrosocpeType";
 
 const SettingPanel = () => {
   const [scalebarConfig] = useAtom(scalebarAtom);
-  const [loadedImages, setLoadedImages] = useAtom(imageAtom);
-  const [magConf, setMagConf] = useAtom(magnificationConfigAtom);
+  const [, setLoadedImages] = useAtom(imageAtom);
   const [, updateScalebarConfig] = useAtom(scalebarUpdaterAtom);
   const [selectedId] = useAtom(selectedIdAtom);
   const [, updateLoadedImage] = useAtom(imageUpdaterAtom);
-  const { objLens = "x200", color = "white" } = useMemo(() => {
-    const image = loadedImages.find((element) => element.id === selectedId);
-    if (selectedId === undefined || !image)
+  const [scalebarLength] = useAtom(scalebarLengthAtom);
+  const [, updateScalebarLength] = useAtom(scalebarLengthUpdaterAtom);
+  const [selectedImage] = useAtom(selectedImageAtom);
+  const {
+    objLens = "x200",
+    color = "white",
+    microscopeType = "upright",
+  } = useMemo(() => {
+    if (!selectedImage)
       return {
-        image: undefined,
-        name: undefined,
         objLens: undefined,
         color: undefined,
+        microscopeType: undefined,
       };
-    return image;
-  }, [loadedImages, selectedId]);
+    return selectedImage;
+  }, [selectedImage]);
 
   // 対物レンズの倍率の型であることのテスト
   const isObjLensOption = useCallback(
     (str: string): str is ObjlensOption => {
-      return OBJLENS_OPTIONS.some((item) => item === str);
+      return [...UPRIGHT_OBJLENS_OPTIONS, ...INVERTED_OBJLENS_OPTIONS].some(
+        (item) => item === str
+      );
     },
-    [OBJLENS_OPTIONS]
+    [UPRIGHT_OBJLENS_OPTIONS, INVERTED_OBJLENS_OPTIONS]
   );
 
   // 倍率の切り替え
@@ -63,10 +79,12 @@ const SettingPanel = () => {
         if (selectedId === undefined) return prev;
         return prev.map((item) => {
           if (item.id !== selectedId) return item;
-          return {
+          const newItem = {
             ...item,
             objLens: v,
           };
+          if (isSafeLoadedImage(newItem)) return newItem;
+          else return item;
         });
       });
   };
@@ -83,7 +101,7 @@ const SettingPanel = () => {
   const handleScalebarColorChange = (v: string) => {
     isScalebarColor(v) &&
       selectedId !== undefined &&
-      updateLoadedImage(selectedId, { color: v });
+      updateLoadedImage({ color: v }, selectedId);
   };
 
   // 文字の太さの型であるかのテスト
@@ -105,29 +123,109 @@ const SettingPanel = () => {
     }
   };
 
+  const handleMicroscopeTypeChange = useCallback(
+    (sid: Symbol | undefined, objLens: ObjlensOption) => (e: string) => {
+      if (sid) {
+        if (!isMicroscopeType(e)) return;
+        if (e === "upright") {
+          updateLoadedImage(
+            {
+              microscopeType: e,
+              objLens: isUprightObjlensOption(objLens) ? objLens : "x200",
+            },
+            sid
+          );
+        }
+        if (e === "inverted") {
+          updateLoadedImage(
+            {
+              microscopeType: e,
+              objLens: isInvertedObjlensOption(objLens) ? objLens : "x200",
+            },
+            sid
+          );
+        }
+      }
+    },
+    [
+      isMicroscopeType,
+      updateLoadedImage,
+      isUprightObjlensOption,
+      isInvertedObjlensOption,
+    ]
+  );
+
   return (
     <div className="w-72 p-6 h-full flex-grow-0 flex-shrink-0">
       <ScrollArea className="h-full">
         <div className="mx-1">
-          <div>倍率</div>
-          <Select
-            value={objLens ?? "x200"}
-            onValueChange={handleObjLensChange}
-            disabled={selectedId === undefined}
+          <Tabs
+            value={microscopeType}
+            onValueChange={handleMicroscopeTypeChange(selectedId, objLens)}
           >
-            <SelectTrigger>
-              <SelectValue placeholder="倍率" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.keys(DEFAULT_MAGNIFICATION_CONFIG).map((item) => {
-                return (
-                  <SelectItem value={`${item}`} key={item}>
-                    {item}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
+            <TabsList className="w-full">
+              <TabsTrigger
+                value="upright"
+                className="flex-grow"
+                disabled={selectedId === undefined}
+              >
+                正立顕微鏡
+              </TabsTrigger>
+              <TabsTrigger
+                value="inverted"
+                className="flex-grow"
+                disabled={selectedId === undefined}
+              >
+                倒立顕微鏡
+              </TabsTrigger>
+            </TabsList>
+
+            <Separator className="my-2 invisible" />
+
+            <div>倍率</div>
+
+            <TabsContent value="upright">
+              <Select
+                value={objLens ?? "x200"}
+                onValueChange={handleObjLensChange}
+                disabled={selectedId === undefined}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="倍率" />
+                </SelectTrigger>
+                <SelectContent>
+                  {UPRIGHT_OBJLENS_OPTIONS.map((item) => {
+                    return (
+                      <SelectItem value={`${item}`} key={item}>
+                        {item}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </TabsContent>
+
+            <TabsContent value="inverted">
+              <Select
+                value={objLens ?? "x200"}
+                onValueChange={handleObjLensChange}
+                disabled={selectedId === undefined}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="倍率" />
+                </SelectTrigger>
+                <SelectContent>
+                  {INVERTED_OBJLENS_OPTIONS.map((item) => {
+                    return (
+                      <SelectItem value={`${item}`} key={item}>
+                        {item}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </TabsContent>
+          </Tabs>
 
           <Separator className="my-4" />
 
@@ -156,17 +254,13 @@ const SettingPanel = () => {
           <div>スケールバーの長さ</div>
           <div className="flex gap-3">
             <NumericInput
-              outerState={magConf[objLens].length}
+              outerState={getScalebarLength(
+                scalebarLength,
+                microscopeType,
+                objLens
+              )}
               setState={(value: number) => {
-                setMagConf((prev) => {
-                  return {
-                    ...prev,
-                    [objLens]: {
-                      ...prev[objLens],
-                      length: value,
-                    },
-                  };
-                });
+                updateScalebarLength(microscopeType, objLens, value);
               }}
               disabled={selectedId === undefined}
             />

@@ -1,25 +1,20 @@
-import { Magnification, Scalebar } from "@/type/imageState";
+import { Scalebar } from "@/type/imageState";
+import { MagnificationConfig } from "@/type/options";
 
-export const DEFAULT_MAGNIFICATION_CONFIG: Magnification = {
-  // dpm は dots per meter
-  x40: { dpm: 689812.36, length: 200 },
-  x100: { dpm: 1724660.68, length: 100 },
-  x200: { dpm: 3449528.42, length: 50 },
-  x400: { dpm: 6877051.66, length: 20 },
-  x500: { dpm: 8572662.97, length: 20 },
-  x100_inverted: {
-    dpm: 2208661.13,
-    length: 100,
+export const DPM_CONFIG: MagnificationConfig<number> = {
+  upright: {
+    x40: 689812.36,
+    x100: 1724660.68,
+    x200: 3449528.42,
+    x400: 6877051.66,
+    x500: 8572662.97,
   },
-  x200_inverted: {
-    dpm: 4263696.05,
-    length: 50,
+  inverted: {
+    x100: 2208661.13,
+    x200: 4263696.05,
+    x400: 5791752.76,
   },
-  x400_inverted: {
-    dpm: 5791752.76,
-    length: 20,
-  },
-} as const;
+};
 
 export const DEFAULT_SCALEBAR_STATE: Scalebar = {
   lineWidth: 10,
@@ -27,4 +22,19 @@ export const DEFAULT_SCALEBAR_STATE: Scalebar = {
   fontWeight: "normal",
   scalebarPosX: 100,
   scalebarPosY: 75,
+};
+
+export const DEFAULT_SCALEBAR_LENGTH: MagnificationConfig<number> = {
+  upright: {
+    x40: 200,
+    x100: 100,
+    x200: 50,
+    x400: 20,
+    x500: 20,
+  },
+  inverted: {
+    x100: 100,
+    x200: 50,
+    x400: 20,
+  },
 };

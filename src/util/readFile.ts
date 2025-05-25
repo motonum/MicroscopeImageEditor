@@ -1,5 +1,5 @@
 import { LoadedImage } from "@/type/imageState";
-import { expectMagnification } from "@/util/expectMagnification";
+import { inferMagnification } from "@/util/inferMagnification";
 
 export const readFiles =
   (addLoadedImage: (loadImage: LoadedImage) => void) => (files: File[]) => {
@@ -11,12 +11,18 @@ export const readFiles =
         if (typeof result === "string") {
           const image = new window.Image();
           image.src = result;
-          addLoadedImage({
-            id: Symbol(),
-            image: image,
-            name: file.name,
-            objLens: expectMagnification(file.name) ?? "x200",
-            color: "white",
+          image.addEventListener("load", () => {
+            const magOption = inferMagnification(file.name, {
+              height: image.naturalHeight,
+              width: image.naturalWidth,
+            });
+            addLoadedImage({
+              id: Symbol(),
+              image: image,
+              name: file.name,
+              color: "white",
+              ...magOption,
+            });
           });
         }
       };
