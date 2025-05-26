@@ -2,11 +2,15 @@ import { MagnificationOption } from "@/type/imageState";
 import { MicroscopeType } from "@/type/options";
 import { isSafeMTypeOLPair } from "@/util/judgeMicrosocpeType";
 
+const nearlyEqual = (a: number, b: number, delta: number = 5) => {
+  return b - delta <= a && a <= b + delta;
+};
+
 const inferMicroscopeType = (size: {
   height: number;
   width: number;
 }): MicroscopeType => {
-  if (size.width === 1937 && size.height === 1460) {
+  if (nearlyEqual(size.width, 1938) && nearlyEqual(size.height, 1460)) {
     return "inverted";
   }
   return "upright";
