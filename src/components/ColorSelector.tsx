@@ -20,29 +20,31 @@ const ColorCircle = ({
   const style = useMemo(() => {
     switch (color) {
       case "default":
+        const slashColor = isSelected ? "#334155" : "#cbd5e1";
         return {
-          background:
-            "linear-gradient(45deg,transparent 0%,transparent 46%,#cbd5e1 46%,#cbd5e1 54%,transparent 54%,transparent 100%)",
+          background: `linear-gradient(45deg,transparent 0%,transparent 46%,${slashColor} 46%,${slashColor} 54%,transparent 54%,transparent 100%)`,
         };
       case "red":
-        return { backgroundColor: "#f55" };
+        return { backgroundColor: isSelected ? "#f00" : "#f99" };
       case "green":
-        return { backgroundColor: "#5f5" };
+        return { backgroundColor: isSelected ? "#0f0" : "#9f9" };
       case "blue":
-        return { backgroundColor: "#55f" };
+        return { backgroundColor: isSelected ? "#00f" : "#99f" };
       case "yellow":
-        return { backgroundColor: "#ff5" };
+        return { backgroundColor: isSelected ? "#ff0" : "#ffb" };
       case "cyan":
-        return { backgroundColor: "#5ff" };
+        return { backgroundColor: isSelected ? "#0ff" : "#9ff" };
     }
-  }, [color]);
+  }, [color, isSelected]);
   return (
     <div
-      className="rounded-lg aspect-square border-slate-300 border-2"
+      className={`rounded-lg aspect-square border-2 ${
+        isSelected ? "border-slate-700" : "border-slate-300"
+      }`}
       style={style}
       onClick={onClick}
     >
-      {isSelected && <CheckIcon color="#333" />}
+      {/* {isSelected && <CheckIcon color="#333" />} */}
     </div>
   );
 };
