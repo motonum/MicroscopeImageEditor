@@ -1,4 +1,3 @@
-import CheckIcon from "@/components/Icon/CheckIcon";
 import {
   imageColorSwitcherAtom,
   selectedIdAtom,
@@ -43,9 +42,7 @@ const ColorCircle = ({
       }`}
       style={style}
       onClick={onClick}
-    >
-      {/* {isSelected && <CheckIcon color="#333" />} */}
-    </div>
+    ></div>
   );
 };
 
