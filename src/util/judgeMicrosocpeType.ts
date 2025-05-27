@@ -1,11 +1,14 @@
-import { LoadedImage, MagnificationOption } from "@/type/imageState";
+import {
+  LoadedImage,
+  LoadedImageCore,
+  MagnificationOption,
+} from "@/type/imageState";
 import {
   INVERTED_OBJLENS_OPTIONS,
   InvertedObjlensOption,
   MICROSCOPE_TYPES,
   MicroscopeType,
   ObjlensOption,
-  ScalebarColorOption,
   UPRIGHT_OBJLENS_OPTIONS,
   UprightObjlensOption,
 } from "@/type/options";
@@ -41,14 +44,7 @@ export const isSafeMTypeOLPair = (obj: {
   }
 };
 
-export type IncompleteLoadedImage = {
-  id: Symbol;
-  image: HTMLImageElement;
-  name: string;
-  color: ScalebarColorOption;
-} & {
-  length?: number;
-} & {
+export type IncompleteLoadedImage = LoadedImageCore & {
   microscopeType: MicroscopeType;
   objLens: ObjlensOption;
 };

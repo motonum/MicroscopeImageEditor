@@ -18,9 +18,11 @@ export const readFiles =
             });
             addLoadedImage({
               id: Symbol(),
-              image: image,
+              originImage: image,
+              editedImage: image,
+              imageColor: "default",
               name: file.name,
-              color: "white",
+              scalebarColor: "white",
               ...magOption,
             });
           });

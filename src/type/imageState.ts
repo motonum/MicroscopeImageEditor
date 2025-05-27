@@ -1,3 +1,4 @@
+import { ColorOption } from "@/type/color";
 import {
   FontWeightOption,
   InvertedObjlensOption,
@@ -15,14 +16,18 @@ export type MagnificationOption =
       objLens: InvertedObjlensOption;
     };
 
-export type LoadedImage = {
+export type LoadedImageCore = {
   id: Symbol;
-  image: HTMLImageElement;
+  originImage: HTMLImageElement;
+  imageColor: ColorOption;
+  editedImage: HTMLImageElement;
   name: string;
-  color: ScalebarColorOption;
+  scalebarColor: ScalebarColorOption;
 } & {
   length?: number;
-} & MagnificationOption;
+};
+
+export type LoadedImage = LoadedImageCore & MagnificationOption;
 
 export type Scalebar = {
   fontSize: number;

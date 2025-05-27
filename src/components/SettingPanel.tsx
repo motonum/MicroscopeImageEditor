@@ -38,6 +38,7 @@ import {
   isSafeLoadedImage,
   isUprightObjlensOption,
 } from "@/util/judgeMicrosocpeType";
+import ColorSelector from "@/components/ColorSelector";
 
 const SettingPanel = () => {
   const [scalebarConfig] = useAtom(scalebarAtom);
@@ -50,13 +51,13 @@ const SettingPanel = () => {
   const [selectedImage] = useAtom(selectedImageAtom);
   const {
     objLens = "x200",
-    color = "white",
+    scalebarColor = "white",
     microscopeType = "upright",
   } = useMemo(() => {
     if (!selectedImage)
       return {
         objLens: undefined,
-        color: undefined,
+        scalebarColor: undefined,
         microscopeType: undefined,
       };
     return selectedImage;
@@ -101,7 +102,7 @@ const SettingPanel = () => {
   const handleScalebarColorChange = (v: string) => {
     isScalebarColor(v) &&
       selectedId !== undefined &&
-      updateLoadedImage({ color: v }, selectedId);
+      updateLoadedImage({ scalebarColor: v }, selectedId);
   };
 
   // 文字の太さの型であるかのテスト
@@ -229,9 +230,15 @@ const SettingPanel = () => {
 
           <Separator className="my-4" />
 
-          <div>色</div>
+          <div>色合成</div>
+          <Separator className="my-1 invisible" />
+          <ColorSelector />
+
+          <Separator className="my-4" />
+
+          <div>スケールバーの色</div>
           <Select
-            value={color}
+            value={scalebarColor}
             onValueChange={handleScalebarColorChange}
             disabled={selectedId === undefined}
           >
