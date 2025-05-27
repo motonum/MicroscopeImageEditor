@@ -55,20 +55,23 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
     const [, updateScalebarConfig] = useAtom(scalebarUpdaterAtom);
 
     const {
-      image,
+      editedImage,
+      originImage,
       name = "noname",
       objLens = "x200",
-      color = "white",
+      scalebarColor = "white",
       microscopeType = "upright",
     } = useMemo(() => {
       const image = loadedImages.find((element) => element.id === imageId);
       if (imageId === undefined || !image)
         return {
-          image: undefined,
+          editedImage: undefined,
+          originImage: undefined,
           name: undefined,
           objLens: undefined,
-          color: undefined,
+          scalebarColor: undefined,
           microscopeType: undefined,
+          imageColor: undefined,
         };
       return image;
     }, [loadedImages, imageId]);
@@ -164,10 +167,10 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
 
     // 画像の縦横の寸法を取得
     useEffect(() => {
-      if (!image) return;
-      setImageHeight(image.naturalHeight);
-      setImageWidth(image.naturalWidth);
-    }, [image]);
+      if (!originImage) return;
+      setImageHeight(originImage.naturalHeight);
+      setImageWidth(originImage.naturalWidth);
+    }, [originImage]);
 
     // スケールバーをドラッグで動かすときにカーソルを十字の矢印に変える
     useEffect(() => {
@@ -182,7 +185,7 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
         scalebarGroupRef.current?.off("mouseover");
         scalebarGroupRef.current?.off("mouseout");
       };
-    }, [scalebarGroupRef, image]);
+    }, [scalebarGroupRef, editedImage]);
 
     // ドラッグ操作中のハンドリング
     const handleDragMove = useCallback(() => {
@@ -199,7 +202,7 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
         )
       );
     }, [
-      image,
+      originImage,
       imageWidth,
       imageHeight,
       scalebarGroupRef,
@@ -228,7 +231,7 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
         });
       }
     }, [
-      image,
+      editedImage,
       scalebarGroupRef,
       fontSize,
       lineWidth,
@@ -259,13 +262,15 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
             >
               <Layer>
                 <Image
-                  image={image}
+                  image={
+                    microscopeType === "upright" ? originImage : editedImage
+                  }
                   ref={imageRef}
                   width={imageWidth}
                   height={imageHeight}
                 />
               </Layer>
-              {image && (
+              {editedImage && (
                 <Layer>
                   <Group
                     x={imageWidth - (scalebarPosX + scalebarGroupWidth)}
@@ -287,9 +292,9 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
                       x={(scalebarGroupWidth - scaleTextWidth) / 2}
                       y={0}
                       fill={
-                        color === "black"
+                        scalebarColor === "black"
                           ? "#000000"
-                          : color === "white"
+                          : scalebarColor === "white"
                           ? "#ffffff"
                           : "#ffffff"
                       }
@@ -302,9 +307,9 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
                       y={fontSize + lineWidth / 2}
                       points={[0, 0, displayScalebarLength, 0]}
                       stroke={
-                        color === "black"
+                        scalebarColor === "black"
                           ? "#000000"
-                          : color === "white"
+                          : scalebarColor === "white"
                           ? "#ffffff"
                           : "#ffffff"
                       }

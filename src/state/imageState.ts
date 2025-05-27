@@ -2,6 +2,7 @@ import {
   DEFAULT_SCALEBAR_LENGTH,
   DEFAULT_SCALEBAR_STATE,
 } from "@/constant/config";
+import { ColorOption } from "@/type/color";
 import { LoadedImage, Scalebar } from "@/type/imageState";
 import {
   InvertedObjlensOption,
@@ -9,6 +10,7 @@ import {
   MicroscopeType,
   UprightObjlensOption,
 } from "@/type/options";
+import { editImageColor } from "@/util/editImageColor";
 import {
   isInvertedObjlensOption,
   isSafeLoadedImage,
@@ -19,7 +21,12 @@ import { atom } from "jotai";
 export const imageAtom = atom<LoadedImage[]>([]);
 export const imageUpdaterAtom = atom(
   null,
-  (get, set, newImageItems: Partial<LoadedImage>, id: Symbol) => {
+  (
+    get,
+    set,
+    newImageItems: Partial<Omit<LoadedImage, "color" | "editedImage">>,
+    id: Symbol
+  ) => {
     const image = get(imageAtom).find((element) => element.id === id);
     if (!image) return;
     set(imageAtom, (prev) =>
@@ -36,6 +43,22 @@ export const imageUpdaterAtom = atom(
     );
   }
 );
+export const imageColorSwitcherAtom = atom(
+  null,
+  (_, set, color: ColorOption, id: Symbol) => {
+    // const image = get(imageAtom).find((element) => element.id === id);
+    // if (!image) return;
+    set(imageAtom, (prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        if (item.imageColor === color) return item;
+        const editedImage = editImageColor(item.originImage, color);
+        return { ...item, imageColor: color, editedImage };
+      })
+    );
+  }
+);
+
 export const imageAdderAtom = atom(null, (_, set, image: LoadedImage) => {
   set(imageAtom, (prev) => [...prev, image]);
 });
