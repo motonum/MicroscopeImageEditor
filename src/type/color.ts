@@ -5,6 +5,7 @@ export const COLOR_OPTIONS = [
   "blue",
   "yellow",
   "cyan",
+  "magenta",
 ] as const;
 
 export type ColorOption = (typeof COLOR_OPTIONS)[number];

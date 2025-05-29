@@ -25,6 +25,9 @@ const rgb2mono = (rgb: RGB, color: ColorOption): RGB => {
     case "cyan": {
       return [0, y, y];
     }
+    case "magenta": {
+      return [y, 0, y];
+    }
     case "default": {
       return [...rgb];
     }
