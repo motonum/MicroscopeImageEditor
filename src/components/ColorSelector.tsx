@@ -11,10 +11,12 @@ const ColorCircle = ({
   color,
   onClick,
   isSelected = false,
+  disabled = false,
 }: {
   color: ColorOption;
   onClick: () => void;
   isSelected: boolean;
+  disabled?: boolean;
 }) => {
   const style = useMemo(() => {
     switch (color) {
@@ -33,16 +35,18 @@ const ColorCircle = ({
         return { backgroundColor: isSelected ? "#ff0" : "#ffb" };
       case "cyan":
         return { backgroundColor: isSelected ? "#0ff" : "#9ff" };
+      case "magenta":
+        return { backgroundColor: isSelected ? "#f0f" : "#f9f" };
     }
   }, [color, isSelected]);
   return (
-    <div
-      className={`rounded-lg aspect-square border-2 ${
+    <button
+      className={`rounded-md aspect-square border-2 ${
         isSelected ? "border-slate-700" : "border-slate-300"
-      }`}
+      } ${disabled ? "cursor-not-allowed" : ""}`}
       style={style}
       onClick={onClick}
-    ></div>
+    ></button>
   );
 };
 
@@ -51,7 +55,7 @@ const ColorSelector = () => {
   const [selectedId] = useAtom(selectedIdAtom);
   const [selectedImage] = useAtom(selectedImageAtom);
   return (
-    <div className="grid grid-cols-6 gap-3 px-2">
+    <div className="grid grid-cols-7 gap-3 px-2">
       {COLOR_OPTIONS.map((color, i) => {
         return (
           <ColorCircle
@@ -69,6 +73,10 @@ const ColorSelector = () => {
                   (selectedImage.microscopeType === "inverted" &&
                     selectedImage.imageColor === color)
                 : false
+            }
+            disabled={
+              !selectedId ||
+              (selectedImage && selectedImage.microscopeType !== "inverted")
             }
           />
         );
