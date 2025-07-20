@@ -265,6 +265,7 @@ const SettingPanel = () => {
           <div className="flex">
             <Checkbox
               id="bg_toggle"
+              disabled={selectedId === undefined}
               checked={scalebarBackground}
               onCheckedChange={(e) => {
                 selectedId &&
