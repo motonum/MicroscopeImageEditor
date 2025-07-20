@@ -38,3 +38,5 @@ export const DEFAULT_SCALEBAR_LENGTH: MagnificationConfig<number> = {
     x400: 20,
   },
 };
+
+export const DEFAULT_SCALEBAR_BACKGROUND_PADDING = 15;
