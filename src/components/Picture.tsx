@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Layer, Stage, Image, Group, Text, Line } from "react-konva";
+import { Layer, Stage, Image, Group, Text, Line, Rect } from "react-konva";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -27,6 +27,7 @@ import { ExecDownloadRef } from "@/type/execDownloadRef";
 import { updateObject } from "@/util/updateObject";
 import { getDPMConfig } from "@/util/getDPMConfig";
 import { getScalebarLength } from "@/util/getScalebarLength";
+import { DEFAULT_SCALEBAR_BACKGROUND_PADDING } from "@/constant/config";
 
 type Props = {
   imageId?: Symbol;
@@ -61,6 +62,7 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
       objLens = "x200",
       scalebarColor = "white",
       microscopeType = "upright",
+      scalebarBackground = false,
     } = useMemo(() => {
       const image = loadedImages.find((element) => element.id === imageId);
       if (imageId === undefined || !image)
@@ -72,6 +74,7 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
           scalebarColor: undefined,
           microscopeType: undefined,
           imageColor: undefined,
+          scalebarBackground: undefined,
         };
       return image;
     }, [loadedImages, imageId]);
@@ -117,53 +120,51 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
     }, []);
 
     // 画像上のスケールバーの長さの計算関数
-    const displayScalebarLength = useMemo(
-      () =>
-        getScalebarLength(scalebarLength, microscopeType, objLens) *
-        getDPMConfig(microscopeType, objLens) *
-        1e-6, // um単位であるため
-      [getScalebarLength, getDPMConfig, scalebarLength, microscopeType, objLens]
-    );
-
-    // 文字も含めたスケールバーの幅
-    const scalebarGroupWidth = useMemo(() => {
-      return Math.max(
-        calcTextWidth(
-          `${getScalebarLength(scalebarLength, microscopeType, objLens)}um`,
-          fontSize
-        ) || 0,
-        displayScalebarLength
-      );
-    }, [
+    const [
       displayScalebarLength,
-      calcTextWidth,
-      scalebarLength,
-      fontSize,
-      objLens,
-      microscopeType,
-    ]);
+      scalebarGroupWidth,
+      scalebarGroupHeight,
+      scaleTextWidth,
+    ] = useMemo(
+      () => {
+        const dispSclLen =
+          getScalebarLength(scalebarLength, microscopeType, objLens) *
+          getDPMConfig(microscopeType, objLens) *
+          1e-6;
 
-    // 文字も含めたスケールバーの高さ
-    const scalebarGroupHeight = useMemo(() => {
-      return fontSize + lineWidth;
-    }, [fontSize, lineWidth]);
+        const sclGrpWid =
+          Math.max(
+            calcTextWidth(
+              `${getScalebarLength(scalebarLength, microscopeType, objLens)}um`,
+              fontSize
+            ) || 0,
+            dispSclLen
+          ) +
+          (scalebarBackground ? DEFAULT_SCALEBAR_BACKGROUND_PADDING * 2 : 0);
 
-    // スケールバーのテキストの横幅
-    const scaleTextWidth = useMemo(() => {
-      return (
-        calcTextWidth(
-          `${getScalebarLength(scalebarLength, microscopeType, objLens)}um`,
-          fontSize
-        ) || 0
-      );
-    }, [
-      calcTextWidth,
-      getScalebarLength,
-      scalebarLength,
-      microscopeType,
-      objLens,
-      fontSize,
-    ]);
+        const sclGrpHeit =
+          fontSize +
+          lineWidth +
+          (scalebarBackground ? DEFAULT_SCALEBAR_BACKGROUND_PADDING * 2 : 0);
+
+        const sclTxtWid =
+          calcTextWidth(
+            `${getScalebarLength(scalebarLength, microscopeType, objLens)}um`,
+            fontSize
+          ) || 0;
+        return [dispSclLen, sclGrpWid, sclGrpHeit, sclTxtWid];
+      }, // um単位であるため
+      [
+        getScalebarLength,
+        getDPMConfig,
+        scalebarLength,
+        microscopeType,
+        objLens,
+        fontSize,
+        lineWidth,
+        scalebarBackground,
+      ]
+    );
 
     // 画像の縦横の寸法を取得
     useEffect(() => {
@@ -198,7 +199,7 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
       scalebarGroupRef.current?.y(
         Math.min(
           Math.max(scalebarGroupRef.current?.y(), 0),
-          (imageHeight || 1200) - (fontSize + lineWidth)
+          (imageHeight || 1200) - scalebarGroupHeight
         )
       );
     }, [
@@ -206,9 +207,8 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
       imageWidth,
       imageHeight,
       scalebarGroupRef,
-      fontSize,
-      lineWidth,
       scalebarGroupWidth,
+      scalebarGroupHeight,
     ]);
 
     // ドラッグ操作後のハンドリング
@@ -220,14 +220,14 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
           "scalebar",
           JSON.stringify(
             updateObject(scalebarConfig, {
-              scalebarPosX: imageWidth - (x + scalebarGroupWidth),
-              scalebarPosY: imageHeight - (y + scalebarGroupHeight),
+              scalebarPosX: imageWidth - (x + scalebarGroupWidth / 2),
+              scalebarPosY: imageHeight - (y + scalebarGroupHeight / 2),
             })
           )
         );
         updateScalebarConfig({
-          scalebarPosX: imageWidth - (x + scalebarGroupWidth),
-          scalebarPosY: imageHeight - (y + scalebarGroupHeight),
+          scalebarPosX: imageWidth - (x + scalebarGroupWidth / 2),
+          scalebarPosY: imageHeight - (y + scalebarGroupHeight / 2),
         });
       }
     }, [
@@ -273,15 +273,30 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
               {editedImage && (
                 <Layer>
                   <Group
-                    x={imageWidth - (scalebarPosX + scalebarGroupWidth)}
-                    y={imageHeight - (scalebarPosY + scalebarGroupHeight)}
+                    x={imageWidth - (scalebarPosX + scalebarGroupWidth / 2)}
+                    y={imageHeight - (scalebarPosY + scalebarGroupHeight / 2)}
                     draggable={draggable}
                     ref={scalebarGroupRef}
-                    height={fontSize + lineWidth}
+                    height={scalebarGroupHeight}
                     width={scalebarGroupWidth}
                     onDragMove={handleDragMove}
                     onDragEnd={handleDragEnd}
                   >
+                    {scalebarBackground && (
+                      <Rect
+                        x={0}
+                        y={0}
+                        height={scalebarGroupHeight}
+                        width={scalebarGroupWidth}
+                        fill={
+                          scalebarColor === "black"
+                            ? "#ffffff"
+                            : scalebarColor === "white"
+                            ? "#000000"
+                            : "#ffffff"
+                        }
+                      />
+                    )}
                     <Text
                       text={`${getScalebarLength(
                         scalebarLength,
@@ -290,7 +305,11 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
                       )}um`}
                       fontSize={fontSize}
                       x={(scalebarGroupWidth - scaleTextWidth) / 2}
-                      y={0}
+                      y={
+                        scalebarBackground
+                          ? DEFAULT_SCALEBAR_BACKGROUND_PADDING
+                          : 0
+                      }
                       fill={
                         scalebarColor === "black"
                           ? "#000000"
@@ -304,7 +323,13 @@ const Picture = forwardRef<ExecDownloadRef, Props>(
                     />
                     <Line
                       x={(scalebarGroupWidth - displayScalebarLength) / 2}
-                      y={fontSize + lineWidth / 2}
+                      y={
+                        scalebarGroupHeight -
+                        lineWidth / 2 -
+                        (scalebarBackground
+                          ? DEFAULT_SCALEBAR_BACKGROUND_PADDING
+                          : 0)
+                      }
                       points={[0, 0, displayScalebarLength, 0]}
                       stroke={
                         scalebarColor === "black"

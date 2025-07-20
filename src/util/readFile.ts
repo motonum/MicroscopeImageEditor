@@ -1,3 +1,4 @@
+import { DEFAULT_SCALEBAR_BACKGROUND_PADDING } from "@/constant/config";
 import { LoadedImage } from "@/type/imageState";
 import { inferMagnification } from "@/util/inferMagnification";
 
@@ -23,6 +24,8 @@ export const readFiles =
               imageColor: "default",
               name: file.name,
               scalebarColor: "white",
+              scalebarBackground: false,
+              scalebarBackgroundPadding: DEFAULT_SCALEBAR_BACKGROUND_PADDING,
               ...magOption,
             });
           });

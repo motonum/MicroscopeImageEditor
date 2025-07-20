@@ -23,6 +23,8 @@ export type LoadedImageCore = {
   editedImage: HTMLImageElement;
   name: string;
   scalebarColor: ScalebarColorOption;
+  scalebarBackground: boolean;
+  scalebarBackgroundPadding: number;
 } & {
   length?: number;
 };

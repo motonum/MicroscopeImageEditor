@@ -39,6 +39,8 @@ import {
   isUprightObjlensOption,
 } from "@/util/judgeMicrosocpeType";
 import ColorSelector from "@/components/ColorSelector";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const SettingPanel = () => {
   const [scalebarConfig] = useAtom(scalebarAtom);
@@ -53,12 +55,14 @@ const SettingPanel = () => {
     objLens = "x200",
     scalebarColor = "white",
     microscopeType = "upright",
+    scalebarBackground = false,
   } = useMemo(() => {
     if (!selectedImage)
       return {
         objLens: undefined,
         scalebarColor: undefined,
         microscopeType: undefined,
+        scalebarBackground: undefined,
       };
     return selectedImage;
   }, [selectedImage]);
@@ -255,6 +259,22 @@ const SettingPanel = () => {
               })}
             </SelectContent>
           </Select>
+
+          {/* スケールバーの背景 */}
+          <Separator className="my-2 invisible" />
+          <div className="flex">
+            <Checkbox
+              id="bg_toggle"
+              checked={scalebarBackground}
+              onCheckedChange={(e) => {
+                selectedId &&
+                  updateLoadedImage({ scalebarBackground: !!e }, selectedId);
+              }}
+            />
+            <Label htmlFor="bg_toggle" className="cursor-pointer pl-2">
+              背景
+            </Label>
+          </div>
 
           <Separator className="my-4" />
 
