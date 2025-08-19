@@ -17,6 +17,7 @@ import {
   isUprightObjlensOption,
 } from "@/util/judgeMicrosocpeType";
 import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
 export const imageAtom = atom<LoadedImage[]>([]);
 export const imageUpdaterAtom = atom(
@@ -76,16 +77,12 @@ export const selectedImageAtom = atom<LoadedImage | undefined>((get) => {
   return image;
 });
 
-const getFromLocalStorage = (): Scalebar | null => {
-  const value: string | null = localStorage.getItem("scalebar");
-  if (!value) return null;
-  return JSON.parse(value);
-};
-
-export const getScalebarInitialState = () => {
-  return { ...DEFAULT_SCALEBAR_STATE, ...getFromLocalStorage() };
-};
-export const scalebarAtom = atom<Scalebar>({ ...getScalebarInitialState() });
+export const scalebarAtom = atomWithStorage<Scalebar>(
+  "scalebar",
+  { ...DEFAULT_SCALEBAR_STATE },
+  undefined,
+  { getOnInit: true }
+);
 
 export const scalebarUpdaterAtom = atom(
   null,
