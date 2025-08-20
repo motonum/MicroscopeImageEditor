@@ -1,23 +1,8 @@
-import {
-  DEFAULT_SCALEBAR_LENGTH,
-  DEFAULT_SCALEBAR_STATE,
-} from "@/constant/config";
 import { ColorOption } from "@/type/color";
-import { LoadedImage, Scalebar } from "@/type/imageState";
-import {
-  InvertedObjlensOption,
-  MagnificationConfig,
-  MicroscopeType,
-  UprightObjlensOption,
-} from "@/type/options";
+import { LoadedImage } from "@/type/imageState";
 import { editImageColor } from "@/util/editImageColor";
-import {
-  isInvertedObjlensOption,
-  isSafeLoadedImage,
-  isUprightObjlensOption,
-} from "@/util/judgeMicrosocpeType";
+import { isSafeLoadedImage } from "@/util/judgeMicrosocpeType";
 import { atom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
 
 export const imageAtom = atom<LoadedImage[]>([]);
 export const imageUpdaterAtom = atom(
@@ -76,43 +61,3 @@ export const selectedImageAtom = atom<LoadedImage | undefined>((get) => {
   const image = loadedImages.find((element) => element.id === selectedId);
   return image;
 });
-
-export const scalebarAtom = atomWithStorage<Scalebar>(
-  "scalebar",
-  { ...DEFAULT_SCALEBAR_STATE },
-  undefined,
-  { getOnInit: true }
-);
-
-export const scalebarUpdaterAtom = atom(
-  null,
-  (_, set, newConfigItems: Partial<Scalebar>) => {
-    set(scalebarAtom, (prev) => ({ ...prev, ...newConfigItems }));
-  }
-);
-
-export const scalebarLengthAtom = atom<MagnificationConfig<number>>({
-  ...DEFAULT_SCALEBAR_LENGTH,
-});
-
-export const scalebarLengthUpdaterAtom = atom(
-  null,
-  (
-    _,
-    set,
-    microscopeType: MicroscopeType,
-    objlens: UprightObjlensOption | InvertedObjlensOption,
-    length: number
-  ) => {
-    set(scalebarLengthAtom, (prev) => {
-      const clone = structuredClone(prev);
-      if (microscopeType === "upright" && isUprightObjlensOption(objlens)) {
-        clone["upright"][objlens] = length;
-      }
-      if (microscopeType === "inverted" && isInvertedObjlensOption(objlens)) {
-        clone["inverted"][objlens] = length;
-      }
-      return clone;
-    });
-  }
-);

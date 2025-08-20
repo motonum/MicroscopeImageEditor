@@ -16,12 +16,12 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { imageAtom } from "@/state/imageState";
 import {
-  imageAtom,
   scalebarAtom,
   scalebarLengthAtom,
   scalebarUpdaterAtom,
-} from "@/state/imageState";
+} from "@/state/scalebarState";
 import { useAtom } from "jotai";
 import { ExecDownloadRef } from "@/type/execDownloadRef";
 import { updateObject } from "@/util/updateObject";
