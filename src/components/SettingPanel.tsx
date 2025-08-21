@@ -17,15 +17,17 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useAtom } from "jotai";
 import {
-  scalebarAtom,
   imageAtom,
-  scalebarUpdaterAtom,
   selectedIdAtom,
   imageUpdaterAtom,
-  scalebarLengthAtom,
-  scalebarLengthUpdaterAtom,
   selectedImageAtom,
 } from "@/state/imageState";
+import {
+  scalebarAtom,
+  scalebarUpdaterAtom,
+  scalebarLengthAtom,
+  scalebarLengthUpdaterAtom,
+} from "@/state/scalebarState";
 import { useCallback, useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import NumericInput from "@/components/NumericInput";
