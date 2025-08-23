@@ -36,14 +36,16 @@ const Workbench = () => {
   }, [selectedId, loadedImages, setSelectedId]);
 
   return (
-    <div className="grow min-w-0 px-6 mt-6">
-      <Picture
-        imageId={selectedId}
-        className="max-w-2xl mx-auto p-0"
-        downloadable
-        draggable
-        ref={execDownloadRef}
-      />
+    <div className="grow min-w-0 px-6 my-6 min-h-0 max-h-full">
+      <div className="grow min-h-0 max-h-[calc(100%-40px)] overflow-auto">
+        <Picture
+          imageId={selectedId}
+          className="max-w-2xl mx-auto p-0"
+          downloadable
+          draggable
+          ref={execDownloadRef}
+        />
+      </div>
       {selectedId !== undefined && (
         <div className="flex max-w-2xl mx-auto mt-3 gap-2">
           <div
