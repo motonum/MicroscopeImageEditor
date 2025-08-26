@@ -33,13 +33,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import NumericInput from "@/components/NumericInput";
 import { updateObject } from "@/util/updateObject";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getScalebarLength } from "@/util/getScalebarLength";
 import {
+  getScalebarLength,
   isInvertedObjlensOption,
   isMicroscopeType,
   isSafeLoadedImage,
   isUprightObjlensOption,
-} from "@/util/judgeMicrosocpeType";
+} from "@/Modules/Magnification";
 import ColorSelector from "@/components/ColorSelector";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";

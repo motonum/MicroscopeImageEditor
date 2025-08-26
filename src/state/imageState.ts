@@ -1,7 +1,7 @@
 import { ColorOption } from "@/type/color";
 import { LoadedImage } from "@/type/imageState";
-import { editImageColor } from "@/util/editImageColor";
-import { isSafeLoadedImage } from "@/util/judgeMicrosocpeType";
+import { editImageColor } from "@/Modules/ImageEditor/editImageColor";
+import { isSafeLoadedImage } from "@/Modules/Magnification/judgeMicroscopeType";
 import { atom } from "jotai";
 
 export const imageAtom = atom<LoadedImage[]>([]);

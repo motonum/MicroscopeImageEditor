@@ -1,6 +1,6 @@
 import { MagnificationOption } from "@/type/imageState";
 import { MicroscopeType } from "@/type/options";
-import { isSafeMTypeOLPair } from "@/util/judgeMicrosocpeType";
+import { isSafeMTypeOLPair } from "@/Modules/Magnification/judgeMicroscopeType";
 
 const nearlyEqual = (a: number, b: number, delta: number = 5) => {
   return b - delta <= a && a <= b + delta;

@@ -7,7 +7,7 @@ import {
 import {
   isInvertedObjlensOption,
   isUprightObjlensOption,
-} from "@/util/judgeMicrosocpeType";
+} from "@/Modules/Magnification/judgeMicroscopeType";
 
 // スケールバーの長さを取得する関数
 export const getScalebarLength = (

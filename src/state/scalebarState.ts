@@ -12,7 +12,7 @@ import {
 import {
   isUprightObjlensOption,
   isInvertedObjlensOption,
-} from "@/util/judgeMicrosocpeType";
+} from "@/Modules/Magnification/judgeMicroscopeType";
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 
