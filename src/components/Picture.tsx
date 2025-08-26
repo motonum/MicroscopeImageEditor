@@ -25,8 +25,7 @@ import {
 import { useAtom } from "jotai";
 import { ExecDownloadRef } from "@/type/execDownloadRef";
 import { updateObject } from "@/util/updateObject";
-import { getDPMConfig } from "@/util/getDPMConfig";
-import { getScalebarLength } from "@/util/getScalebarLength";
+import { getDPMConfig, getScalebarLength } from "@/Modules/Magnification";
 import { DEFAULT_SCALEBAR_BACKGROUND_PADDING } from "@/constant/config";
 
 type Props = {

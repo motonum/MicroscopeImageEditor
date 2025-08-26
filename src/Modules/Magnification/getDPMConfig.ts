@@ -3,7 +3,7 @@ import { MicroscopeType, ObjlensOption } from "@/type/options";
 import {
   isInvertedObjlensOption,
   isUprightObjlensOption,
-} from "@/util/judgeMicrosocpeType";
+} from "@/Modules/Magnification/judgeMicroscopeType";
 
 export const getDPMConfig = (mt: MicroscopeType, ol: ObjlensOption) => {
   if (isUprightObjlensOption(ol) && mt === "upright") {

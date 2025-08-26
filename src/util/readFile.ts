@@ -1,6 +1,6 @@
 import { DEFAULT_SCALEBAR_BACKGROUND_PADDING } from "@/constant/config";
 import { LoadedImage } from "@/type/imageState";
-import { inferMagnification } from "@/util/inferMagnification";
+import { inferMagnification } from "@/Modules/Magnification/inferMagnification";
 
 export const readFiles =
   (addLoadedImage: (loadImage: LoadedImage) => void) => (files: File[]) => {
