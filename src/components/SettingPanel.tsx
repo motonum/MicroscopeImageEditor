@@ -43,6 +43,7 @@ import {
 import ColorSelector from "@/components/ColorSelector";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { DEFAULT_SCALEBAR_LENGTH, DEFAULT_SCALEBAR_STATE } from "@/constant/config";
 
 const SettingPanel = () => {
   const [scalebarConfig] = useAtom(scalebarAtom);
@@ -289,10 +290,16 @@ const SettingPanel = () => {
                 microscopeType,
                 objLens
               )}
-              setState={(value: number) => {
+              setOuterState={(value: number) => {
                 updateScalebarLength(microscopeType, objLens, value);
               }}
               disabled={selectedId === undefined}
+              rejectNegative
+              defaultValue={getScalebarLength(
+                DEFAULT_SCALEBAR_LENGTH,
+                microscopeType,
+                objLens
+              )}
             />
             <div className="flex items-center">um</div>
           </div>
@@ -302,7 +309,7 @@ const SettingPanel = () => {
           <div>スケールバーの太さ</div>
           <div className="flex gap-3">
             <NumericInput
-              setState={(value) => {
+              setOuterState={(value) => {
                 localStorage.setItem(
                   "scalebar",
                   JSON.stringify(
@@ -315,6 +322,8 @@ const SettingPanel = () => {
               }}
               outerState={scalebarConfig.lineWidth}
               disabled={selectedId === undefined}
+              rejectNegative
+              defaultValue={DEFAULT_SCALEBAR_STATE.lineWidth}
             />
             <div className="flex items-center">px</div>
           </div>
@@ -324,7 +333,7 @@ const SettingPanel = () => {
           <div>文字の大きさ</div>
           <div className="flex gap-3">
             <NumericInput
-              setState={(value) => {
+              setOuterState={(value) => {
                 localStorage.setItem(
                   "scalebar",
                   JSON.stringify(
@@ -335,6 +344,8 @@ const SettingPanel = () => {
               }}
               outerState={scalebarConfig.fontSize}
               disabled={selectedId === undefined}
+              rejectNegative
+              defaultValue={DEFAULT_SCALEBAR_STATE.fontSize}
             />
             <div className="flex items-center">px</div>
           </div>
