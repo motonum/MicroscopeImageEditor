@@ -10,6 +10,7 @@ import { useAtom } from "jotai";
 import { imageAdderAtom } from "@/state/imageState";
 import Header from "@/components/Header";
 import FoldableSidebar from "@/components/FoldableSidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 const App = () => {
   const [, addLoadedImage] = useAtom(imageAdderAtom);
@@ -46,6 +47,7 @@ const App = () => {
         <Separator orientation="vertical" className="h-full" />
         <SettingPanel />
       </div>
+      <Toaster />
     </div>
   );
 };

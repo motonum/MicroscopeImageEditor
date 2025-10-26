@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 type Props = {
   outerState: number;
@@ -21,9 +22,13 @@ const NumericInput: React.FC<Props> = ({ outerState, setOuterState, disabled, re
   const handleBlur = useCallback(() => {
     const parsed = parseFloat(rawValue);
     if (rejectNegative && !isNaN(parsed) && parsed < 0) {
+      toast.error("負の数は入力できません");
       setRawValue(defaultValue.toString());
       setOuterState(defaultValue);
       return;
+    }
+    if (isNaN(parsed)) {
+      toast.error("有効な数値を入力してください");
     }
     const newValue = isNaN(parsed) ? defaultValue : parsed;
     setRawValue(newValue.toString());
