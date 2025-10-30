@@ -16,8 +16,8 @@ const DummySelectedViewer = () => {
   return <div data-testid="selected">{String(selectedId)}</div>;
 };
 
-describe('LoadedImageItem', () => {
-  it('renders name and selects on click and shows delete on hover', () => {
+describe('LoadedImageItem コンポーネント', () => {
+  it('名前が表示され、クリックで選択され、ホバーで削除ボタンが表示されること', () => {
     const img = new Image();
     const loadedImage = {
       id: Symbol('id1'),

@@ -11,8 +11,8 @@ import LoadedImages from '@/components/LoadedImages';
 import { imageAtom } from '@/state/imageState';
 import { LoadedImage } from '@/type/imageState';
 
-describe('LoadedImages', () => {
-  it('disables "すべて保存" when no images and enables when images exist', () => {
+describe('LoadedImages コンポーネント', () => {
+  it('画像がないときは「すべて保存」が無効、画像があるときは有効であること', () => {
     const storeEmpty = createStore();
     storeEmpty.set(imageAtom, [] as LoadedImage[]);
     const { rerender } = render(
